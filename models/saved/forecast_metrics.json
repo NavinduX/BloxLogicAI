@@ -1,0 +1,10 @@
+{
+  "model": "univariate",
+  "test_periods": 12,
+  "mae": 1768.0,
+  "rmse": 1976.61,
+  "mape": 9.06,
+  "train_start": "2011-10-01",
+  "test_start": "2025-05-01",
+  "test_end": "2026-04-01"
+}

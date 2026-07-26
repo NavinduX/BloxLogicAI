@@ -1,0 +1,64 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.Python
+env/
+venv/
+.venv/
+ENV/
+
+# Streamlit
+.streamlit/
+
+# Models (serialized) — keep the trained model + metrics committed for the demo
+models/saved/*.pkl
+
+# Data — only large third-party source data is kept out of git
+data/sources/
+
+# User credential store (runtime; hashed passwords — do not commit)
+data/users.csv
+
+# Blockchain ledger (runtime file)
+blockchain/ledger.json
+
+# QR code output
+*.png
+docs/*.png
+!docs/architecture_diagram.png
+!docs/blockchain_flow.png
+
+# Environment
+.env
+*.env
+
+# IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Pytest / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# AI dev tools
+.serena/
+
+# Personal planning / notes
+daily-plans/
+pre-implementation-plan.md
