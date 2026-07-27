@@ -1,62 +1,187 @@
 """
-BloxLogicAI — Streamlit app entry point + router.
+BloxLogicAI — Streamlit dashboard.
 
+Module 1: Tea export volume forecasting (Prophet).
 Run from the project root:  streamlit run app/main.py
-
-A ``st.session_state`` router gates the app: unauthenticated visitors see the
-landing / login / register pages; authenticated users see the protected
-dashboard. Auth logic lives in ``app/auth.py``; each screen is a ``render()``
-in ``app/views/``.
 """
 
 from __future__ import annotations
 
 import os
 import sys
+import json
 
+import pandas as pd
+import plotly.graph_objects as go
 import streamlit as st
 
-# make the project root importable so `app.*`, `models.*`, `utils.*` resolve
+# make project packages importable when launched via `streamlit run app/main.py`
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
-from app import auth                                    # noqa: E402
-from app.views import landing, login, register  # noqa: E402
+from models import forecasting as fc          # noqa: E402
+from utils import data_loader                 # noqa: E402
 
-st.set_page_config(page_title="BloxLogicAI — Tea Supply-Chain Intelligence",
+st.set_page_config(page_title="BloxLogicAI — Tea Export Forecast",
                    page_icon="🍃", layout="wide")
 
-auth.init_session()
 
-PUBLIC_PAGES = {"landing": landing, "login": login, "register": register}
+# ---------------------------------------------------------------------------
+# Cached data / model helpers
+# ---------------------------------------------------------------------------
+@st.cache_data(show_spinner=False)
+def get_data() -> pd.DataFrame:
+    """Forecast dataset (ds, y); build it from sources if not yet generated."""
+    if not os.path.exists(fc.DATA):
+        df = data_loader.build_forecast_dataset()
+        os.makedirs(os.path.dirname(fc.DATA), exist_ok=True)
+        df.to_csv(fc.DATA, index=False)
+    raw = pd.read_csv(fc.DATA, parse_dates=["ds"])
+    return raw
+
+
+@st.cache_resource(show_spinner="Training Prophet model…")
+def get_model(_df: pd.DataFrame):
+    """Load the saved model, or train + save one if missing."""
+    if os.path.exists(fc.MODEL_PATH):
+        return fc.load_model()
+    model = fc.train_model(_df[["ds", "y"]])
+    fc.save_model(model)
+    return model
+
+
+def load_metrics() -> dict | None:
+    if os.path.exists(fc.METRICS_PATH):
+        with open(fc.METRICS_PATH) as fh:
+            return json.load(fh)
+    return None
+
+
+def retrain(df: pd.DataFrame) -> dict:
+    """Force a fresh fit + backtest, refresh caches, persist artifacts."""
+    metrics = fc.evaluate(df[["ds", "y"]], test_periods=12)
+    model = fc.train_model(df[["ds", "y"]])
+    fc.save_model(model)
+    os.makedirs(fc.SAVED, exist_ok=True)
+    with open(fc.METRICS_PATH, "w") as fh:
+        json.dump(metrics, fh, indent=2)
+    get_model.clear()
+    return metrics
 
 
 # ---------------------------------------------------------------------------
-# Router
+# Sidebar
 # ---------------------------------------------------------------------------
-if not auth.is_authenticated():
-    page = st.session_state.page
-    if page not in PUBLIC_PAGES:
-        page = "landing"
-    PUBLIC_PAGES[page].render()
+st.sidebar.title("🍃 BloxLogicAI")
+st.sidebar.caption("Sri Lanka tea supply-chain intelligence")
+st.sidebar.header("Forecast settings")
+horizon = st.sidebar.slider("Forecast horizon (months)", 3, 24, 12)
+show_band = st.sidebar.checkbox("Show confidence interval", value=True)
+show_imputed = st.sidebar.checkbox("Mark interpolated months", value=True)
+
+df = get_data()
+
+if st.sidebar.button("🔄 Retrain model", use_container_width=True):
+    with st.spinner("Retraining and backtesting…"):
+        retrain(df)
+    st.sidebar.success("Model retrained.")
+
+model = get_model(df)
+metrics = load_metrics()
+
+
+# ---------------------------------------------------------------------------
+# Header + KPIs
+# ---------------------------------------------------------------------------
+st.title("Tea Export Volume Forecast")
+st.caption("Monthly Sri Lanka tea export volume (MT) — Prophet, univariate "
+           f"({df.ds.min():%b %Y} → {df.ds.max():%b %Y}, {len(df)} months).")
+
+forecast = fc.predict(model, periods=horizon)            # history + future
+future = forecast[forecast["ds"] > df["ds"].max()]
+
+latest = df.iloc[-1]
+prev = df.iloc[-2]
+delta_pct = (latest.y - prev.y) / prev.y * 100
+
+c1, c2, c3, c4 = st.columns(4)
+c1.metric(f"Latest export ({latest.ds:%b %Y})",
+          f"{latest.y:,.0f} MT", f"{delta_pct:+.1f}% MoM")
+c2.metric("Next-month forecast",
+          f"{future.iloc[0].yhat:,.0f} MT" if len(future) else "—")
+if metrics:
+    c3.metric("Backtest MAPE", f"{metrics['mape']:.1f}%")
+    c4.metric("Backtest MAE", f"{metrics['mae']:,.0f} MT")
 else:
-    user = auth.current_user()
+    c3.metric("Backtest MAPE", "—")
+    c4.metric("Backtest MAE", "—")
 
-    # --- Sidebar: identity + navigation + sign out ---
-    st.sidebar.title("🍃 BloxLogicAI")
-    st.sidebar.caption("Sri Lanka tea supply-chain intelligence")
-    st.sidebar.markdown(
-        f"**Signed in as** {user['username']}  \n"
-        f"_Role: {user['role']}_"
+
+# ---------------------------------------------------------------------------
+# Chart
+# ---------------------------------------------------------------------------
+fig = go.Figure()
+
+if show_band:
+    fig.add_trace(go.Scatter(
+        x=list(future.ds) + list(future.ds[::-1]),
+        y=list(future.yhat_upper) + list(future.yhat_lower[::-1]),
+        fill="toself", fillcolor="rgba(0,150,80,0.15)",
+        line=dict(width=0), hoverinfo="skip", name="Confidence interval"))
+
+fig.add_trace(go.Scatter(x=df.ds, y=df.y, mode="lines",
+                         name="Actual", line=dict(color="#1f3b2d", width=2)))
+
+fig.add_trace(go.Scatter(x=future.ds, y=future.yhat, mode="lines",
+                         name="Forecast",
+                         line=dict(color="#2e9e5b", width=2, dash="dash")))
+
+if show_imputed and "y_imputed" in df.columns:
+    imp = df[df["y_imputed"]]
+    if len(imp):
+        fig.add_trace(go.Scatter(x=imp.ds, y=imp.y, mode="markers",
+                                 name="Interpolated",
+                                 marker=dict(color="#d98e04", size=7,
+                                             symbol="circle-open")))
+
+fig.update_layout(height=460, hovermode="x unified",
+                  margin=dict(t=30, b=10, l=10, r=10),
+                  yaxis_title="Export volume (MT)",
+                  legend=dict(orientation="h", yanchor="bottom", y=1.02))
+st.plotly_chart(fig, use_container_width=True)
+
+
+# ---------------------------------------------------------------------------
+# Forecast table + download
+# ---------------------------------------------------------------------------
+left, right = st.columns([2, 1])
+
+with left:
+    st.subheader(f"Forecast — next {horizon} months")
+    table = future.rename(columns={
+        "ds": "Month", "yhat": "Forecast (MT)",
+        "yhat_lower": "Lower", "yhat_upper": "Upper"}).copy()
+    table["Month"] = table["Month"].dt.strftime("%Y-%m")
+    for c in ["Forecast (MT)", "Lower", "Upper"]:
+        table[c] = table[c].round(0).astype(int)
+    st.dataframe(table, use_container_width=True, hide_index=True)
+    st.download_button("⬇️ Download forecast (CSV)",
+                       table.to_csv(index=False).encode(),
+                       file_name="tea_export_forecast.csv", mime="text/csv")
+
+with right:
+    st.subheader("Model")
+    st.markdown(
+        "- **Algorithm:** Prophet (univariate)\n"
+        f"- **Seasonality:** {fc.DEFAULT_PARAMS['seasonality_mode']}\n"
+        f"- **Changepoint scale:** {fc.DEFAULT_PARAMS['changepoint_prior_scale']}\n"
+        f"- **Training span:** {df.ds.min():%Y-%m} → {df.ds.max():%Y-%m}"
     )
-    if st.sidebar.button("🚪 Sign out", use_container_width=True):
-        auth.logout_user()
-        st.rerun()
-    st.sidebar.divider()
-
-    # Only the forecast page exists today; anomaly / blockchain / admin
-    # views plug in here in later phases. Imported lazily so the public
-    # landing/login path never pays the Prophet/cmdstanpy import cost.
-    from app.views import forecast  # noqa: E402
-    forecast.render()
+    if metrics:
+        st.caption(f"Backtested on the last {metrics['test_periods']} months "
+                   f"({metrics['test_start']} → {metrics['test_end']}).")
+    if "y_imputed" in df.columns:
+        n_imp = int(df["y_imputed"].sum())
+        st.caption(f"{n_imp} of {len(df)} months were interpolated from "
+                   "missing source records.")

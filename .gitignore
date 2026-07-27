@@ -24,9 +24,6 @@ models/saved/*.pkl
 # Data — only large third-party source data is kept out of git
 data/sources/
 
-# User credential store (runtime; hashed passwords — do not commit)
-data/users.csv
-
 # Blockchain ledger (runtime file)
 blockchain/ledger.json
 

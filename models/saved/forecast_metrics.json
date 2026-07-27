@@ -1,5 +1,4 @@
 {
-  "model": "univariate",
   "test_periods": 12,
   "mae": 1768.0,
   "rmse": 1976.61,
