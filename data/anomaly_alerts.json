@@ -1,0 +1,37 @@
+[
+  {
+    "date": "2022-04",
+    "type": "Economic Crisis / Fuel Shortage",
+    "severity": "HIGH",
+    "action": "Reduce export targets by 20%; activate currency hedging strategies",
+    "description": "Sri Lanka's 2022 economic crisis caused severe fuel shortages that disrupted factory operations, transport, and port logistics. Export volumes dropped 18% below seasonal average."
+  },
+  {
+    "date": "2021-07",
+    "type": "Fertiliser Ban — Production Drop",
+    "severity": "HIGH",
+    "action": "Source alternative organic inputs; notify international buyers of lower volumes",
+    "description": "Government ban on chemical fertilisers caused a sharp drop in tea yields across all elevation zones. High-grown and low-grown estates reported 15-22% yield reductions."
+  },
+  {
+    "date": "2020-04",
+    "type": "COVID-19 Supply Disruption",
+    "severity": "HIGH",
+    "action": "Monitor shipping delays; build buffer stock for key buyers (Russia, UAE, UK)",
+    "description": "Pandemic lockdowns disrupted port operations and reduced export volumes significantly. Container availability dropped and freight costs surged 40% during peak months."
+  },
+  {
+    "date": "2023-10",
+    "type": "Export Volume Drop",
+    "severity": "MEDIUM",
+    "action": "Review production capacity and re-evaluate near-term demand forecasts",
+    "description": "Unexplained dip in monthly export volume — 14% below seasonal average. Possibly linked to delayed auction clearances at the Colombo Tea Auction."
+  },
+  {
+    "date": "2023-02",
+    "type": "FX Rate Spike (USD/LKR > 360)",
+    "severity": "MEDIUM",
+    "action": "Expedite pending shipments to lock in favourable exchange rates",
+    "description": "Rapid LKR depreciation against USD created a short-term pricing advantage for exporters but introduced uncertainty in forward contract pricing with major buyers."
+  }
+]
