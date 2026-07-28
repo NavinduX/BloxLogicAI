@@ -1,0 +1,132 @@
+[
+  {
+    "block_num": 1,
+    "batch_id": "TEA001",
+    "stage": "Harvested",
+    "location": "Nuwara Eliya Estate",
+    "details": "2,500 kg Orthodox Black Tea harvested; leaf grade: BOP",
+    "timestamp": "2026-01-05T08:00:00",
+    "previous_hash": "0000000000000000",
+    "current_hash": "4c862df157d5a3647ed31f15284445660e60f15663181cccb2a49f36dc646286"
+  },
+  {
+    "block_num": 2,
+    "batch_id": "TEA001",
+    "stage": "Processed",
+    "location": "Tea Factory A, Nuwara Eliya",
+    "details": "Withered 18h; CTC rolled; dried at 90\u00b0C; moisture 3.4%",
+    "timestamp": "2026-01-07T10:30:00",
+    "previous_hash": "4c862df157d5a3647ed31f15284445660e60f15663181cccb2a49f36dc646286",
+    "current_hash": "f2af88c0e1b148bdcaa138c59cb085dae11f9f2884694d3f92936b98a6cf752e"
+  },
+  {
+    "block_num": 3,
+    "batch_id": "TEA001",
+    "stage": "Blended",
+    "location": "Colombo Blending Hub",
+    "details": "Blended with BOPF grade; final moisture 3.2%; lot #NE-2601-A",
+    "timestamp": "2026-01-09T09:00:00",
+    "previous_hash": "f2af88c0e1b148bdcaa138c59cb085dae11f9f2884694d3f92936b98a6cf752e",
+    "current_hash": "1d0d5bc7fd7b09f4e58b494f4e9679fefe3d5446ef1dbd4bb6760b6d0a2d4091"
+  },
+  {
+    "block_num": 4,
+    "batch_id": "TEA001",
+    "stage": "Packaged",
+    "location": "Colombo Export Hub",
+    "details": "Packed in 50 kg foil-lined bags; 50 bags; pallet #P-2601-NE",
+    "timestamp": "2026-01-10T14:00:00",
+    "previous_hash": "1d0d5bc7fd7b09f4e58b494f4e9679fefe3d5446ef1dbd4bb6760b6d0a2d4091",
+    "current_hash": "8aa2db8d4e4f1d9c418144dd5734d06367384a14fcf30a6d1dd5fa0fe9049a9e"
+  },
+  {
+    "block_num": 5,
+    "batch_id": "TEA001",
+    "stage": "Exported",
+    "location": "Port of Colombo",
+    "details": "Destination: UK; container HLCU4421839; vessel MSC Beatrice",
+    "timestamp": "2026-01-12T06:00:00",
+    "previous_hash": "8aa2db8d4e4f1d9c418144dd5734d06367384a14fcf30a6d1dd5fa0fe9049a9e",
+    "current_hash": "a4c92d1b6ef4afc402dee15d8c486b3a037b364a358b9e3a30bf2377ac793401"
+  },
+  {
+    "block_num": 6,
+    "batch_id": "TEA002",
+    "stage": "Harvested",
+    "location": "Kandy Estate",
+    "details": "1,800 kg CTC Black Tea harvested; leaf grade: BOPF",
+    "timestamp": "2026-01-15T07:30:00",
+    "previous_hash": "a4c92d1b6ef4afc402dee15d8c486b3a037b364a358b9e3a30bf2377ac793401",
+    "current_hash": "ed6a1e813036a5dd66cda5602d29f3f56593b42eecc2571b5b9799d458706edf"
+  },
+  {
+    "block_num": 7,
+    "batch_id": "TEA002",
+    "stage": "Processed",
+    "location": "Tea Factory B, Kandy",
+    "details": "Withered 16h; CTC processed; dried; moisture 3.6%",
+    "timestamp": "2026-01-17T11:00:00",
+    "previous_hash": "ed6a1e813036a5dd66cda5602d29f3f56593b42eecc2571b5b9799d458706edf",
+    "current_hash": "788f6473f170e8076e21bcad37e29dac16b28c83399d2477780a8d0c0d761d0e"
+  },
+  {
+    "block_num": 8,
+    "batch_id": "TEA002",
+    "stage": "Packaged",
+    "location": "Colombo Export Hub",
+    "details": "Packed in 50 kg foil-lined bags; 36 bags; pallet #P-2601-KD",
+    "timestamp": "2026-01-20T13:00:00",
+    "previous_hash": "788f6473f170e8076e21bcad37e29dac16b28c83399d2477780a8d0c0d761d0e",
+    "current_hash": "a4c973b45ca37ad669605fe0c6c7d5c33d680744aa81f727c3856a7ce538805a"
+  },
+  {
+    "block_num": 9,
+    "batch_id": "TEA003",
+    "stage": "Harvested",
+    "location": "Uva Estate, Badulla",
+    "details": "2,200 kg BOP Grade; high-elevation single-estate",
+    "timestamp": "2026-01-20T08:00:00",
+    "previous_hash": "a4c973b45ca37ad669605fe0c6c7d5c33d680744aa81f727c3856a7ce538805a",
+    "current_hash": "e2b40d967bfbae8ee4b91ed80ca5749dfd7b2f58a6782f3d03b2a24a0f618c94"
+  },
+  {
+    "block_num": 10,
+    "batch_id": "TEA003",
+    "stage": "Processed",
+    "location": "Tea Factory C, Badulla",
+    "details": "Processed orthodox method; withered 20h; fired at 85\u00b0C",
+    "timestamp": "2026-01-22T10:00:00",
+    "previous_hash": "e2b40d967bfbae8ee4b91ed80ca5749dfd7b2f58a6782f3d03b2a24a0f618c94",
+    "current_hash": "0200385886ff50a5b70fa971794106d288c5ddcda39dab0275f0490f17f3ecc5"
+  },
+  {
+    "block_num": 11,
+    "batch_id": "TEA003",
+    "stage": "Blended",
+    "location": "Colombo Blending Hub",
+    "details": "Blended with OP grade; cupped and approved by master taster",
+    "timestamp": "2026-01-24T09:30:00",
+    "previous_hash": "0200385886ff50a5b70fa971794106d288c5ddcda39dab0275f0490f17f3ecc5",
+    "current_hash": "466527f263cb84ba1bc67ab7dee59603503d65fd89a2026c37af26ba30f2adf9"
+  },
+  {
+    "block_num": 12,
+    "batch_id": "TEA003",
+    "stage": "Packaged",
+    "location": "Colombo Export Hub",
+    "details": "Packed in 50 kg foil-lined bags; 44 bags; pallet #P-2601-UV",
+    "timestamp": "2026-01-25T15:00:00",
+    "previous_hash": "466527f263cb84ba1bc67ab7dee59603503d65fd89a2026c37af26ba30f2adf9",
+    "current_hash": "f65786886744f6bdf6b79f2676755617c4ca19641a009127a71419357c6a3602"
+  },
+  {
+    "block_num": 13,
+    "batch_id": "TEA003",
+    "stage": "Exported",
+    "location": "Port of Colombo",
+    "details": "Destination: UAE; container MSCU3312765; vessel MSC Arabia",
+    "timestamp": "2026-01-27T06:00:00",
+    "previous_hash": "f65786886744f6bdf6b79f2676755617c4ca19641a009127a71419357c6a3602",
+    "current_hash": "fa075b7316e837a89fbe9037537769f1472ac4be5bbf74a733935b49a24c4490"
+  }
+]

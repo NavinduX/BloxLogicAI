@@ -211,7 +211,7 @@ def evaluate(df: pd.DataFrame, test_periods: int = TEST_PERIODS,
       * "actual" — use the real held-out drivers; an oracle upper bound.
     """
     regressors = list(regressors)
-    if len(df) <= test_periods + 12:
+    if len(df) <= test_periods:
         raise ValueError("Not enough history for the requested hold-out.")
 
     train, test = df.iloc[:-test_periods], df.iloc[-test_periods:]
