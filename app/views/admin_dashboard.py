@@ -10,7 +10,7 @@ from datetime import datetime
 
 import streamlit as st
 
-from app.config import FORECAST_CSV, LEDGER_PATH, METRICS_PATH, MODEL_PATH, USERS_CSV
+from app.config import FORECAST_CSV, LEDGER_PATH, METRICS_PATH, MODEL_PATH, USERS_CSV, ANOMALY_PATH
 from app.style import metric_card
 from blockchain.ledger import load_ledger, verify_chain
 
@@ -39,6 +39,24 @@ def _mape() -> str:
     return "—"
 
 
+def _anomaly_count() -> int | None:
+    if not os.path.exists(ANOMALY_PATH):
+        return None
+    with open(ANOMALY_PATH, encoding="utf-8") as fh:
+        alerts = json.load(fh)
+        return len(alerts)
+
+
+def _data_pipeline_status() -> str:
+    import pandas as pd
+    if os.path.exists(FORECAST_CSV):
+        try:
+            return f"{len(pd.read_csv(FORECAST_CSV))} months loaded"
+        except Exception:
+            return "Data error"
+    return "Data pipeline pending"
+
+
 def _status_row(label: str, value: str, ok: bool | None = True) -> None:
     icon  = "✓" if ok is True else ("✗" if ok is False else "—")
     color = "#2E7D32" if ok is True else ("#C62828" if ok is False else "#BDBDBD")
@@ -60,6 +78,9 @@ def render() -> None:
     c1, c2, c3, c4 = st.columns(4)
     model_trained = os.path.exists(MODEL_PATH)
 
+    anomalies = _anomaly_count()
+    anomaly_trained = anomalies is not None
+
     with c1:
         metric_card("Registered Users", str(_user_count()), note="CSV-based user store")
     with c2:
@@ -69,9 +90,14 @@ def render() -> None:
             note=f"MAPE: {_mape()}",
         )
     with c3:
-        metric_card("Blockchain Blocks", str(_block_count()), note="3 batches tracked")
+        metric_card("Blockchain Blocks", str(_block_count()), note="Locally verified")
     with c4:
-        metric_card("Anomaly Model", "Not trained", positive=False, note="Isolation Forest — pending")
+        metric_card(
+            "Anomaly Model", 
+            "Trained" if anomaly_trained else "Not trained", 
+            positive=anomaly_trained, 
+            note=f"{anomalies} anomalies flagged" if anomaly_trained else "Isolation Forest — pending"
+        )
 
     st.divider()
 
@@ -103,10 +129,13 @@ def render() -> None:
         st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
 
         if st.button("Run Anomaly Detection", use_container_width=True):
-            import time
             with st.spinner("Running Isolation Forest…"):
-                time.sleep(1.5)
-            st.success("Anomaly Detection complete — 5 anomalies flagged.")
+                try:
+                    from models import anomaly
+                    num = anomaly.run_anomaly_detection()
+                    st.success(f"Anomaly Detection complete — {num} anomalies flagged.")
+                except Exception as exc:
+                    st.error(f"Anomaly detection failed: {exc}")
 
         st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
 
@@ -132,8 +161,8 @@ def render() -> None:
         )
         _status_row("Forecast Model",  "Trained" if model_trained else "Not trained", model_trained)
         _status_row("Forecast MAPE",   _mape(), True)
-        _status_row("Anomaly Model",   "Not trained", None)
-        _status_row("Data Pipeline",   "176 months loaded", True)
+        _status_row("Anomaly Model",   "Trained" if anomaly_trained else "Not trained", anomaly_trained)
+        _status_row("Data Pipeline",   _data_pipeline_status(), True)
         _status_row("Blockchain",      f"{len(blocks)} blocks · {'VALID' if chain_ok else 'INVALID'}", chain_ok)
         _status_row("Last Updated",    datetime.now().strftime("%Y-%m-%d"), True)
         st.markdown("</div>", unsafe_allow_html=True)

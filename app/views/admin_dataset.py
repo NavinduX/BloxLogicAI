@@ -9,7 +9,7 @@ import os
 import pandas as pd
 import streamlit as st
 
-from app.config import FORECAST_CSV, PROCESSED_DIR
+from app.config import FORECAST_CSV, MV_FORECAST_CSV, ANOMALY_CSV, PROCESSED_DIR
 from app.style import metric_card
 
 
@@ -53,7 +53,7 @@ def render() -> None:
     st.subheader("Current Forecast Dataset")
 
     if not os.path.exists(FORECAST_CSV):
-        st.warning("forecast_dataset.csv not found. Run the data pipeline first.")
+        st.warning("forecast_univariant.csv not found. Run the data pipeline first.")
         return
 
     df = pd.read_csv(FORECAST_CSV, parse_dates=["ds"])
@@ -86,16 +86,70 @@ def render() -> None:
     st.download_button(
         "Download CSV",
         data=df.to_csv(index=False).encode(),
-        file_name="forecast_dataset.csv",
+        file_name="forecast_univariant.csv",
         mime="text/csv",
     )
+
+    # ── Current multivariate dataset ───────────────────────────────────────
+    st.divider()
+    st.subheader("Multivariate Forecast Dataset")
+
+    if not os.path.exists(MV_FORECAST_CSV):
+        st.warning("forecast_multivariant.csv not found.")
+    else:
+        df_mv = pd.read_csv(MV_FORECAST_CSV, parse_dates=["ds"])
+        n_imputed_mv = int(df_mv["y_imputed"].sum()) if "y_imputed" in df_mv.columns else 0
+
+        m1, m2, m3, m4 = st.columns(4)
+        with m1:
+            metric_card("Total Records", str(len(df_mv)))
+        with m2:
+            metric_card("Date Range", "175 months")
+        with m3:
+            metric_card("Imputed Rows", str(n_imputed_mv))
+        with m4:
+            metric_card("Features", str(len(df_mv.columns)))
+
+        st.caption(
+            f"Date range: {df_mv['ds'].min().strftime('%Y-%m')} → "
+            f"{df_mv['ds'].max().strftime('%Y-%m')}"
+        )
+        display_df_mv = df_mv.copy()
+        display_df_mv["ds"] = display_df_mv["ds"].dt.strftime("%Y-%m")
+        st.dataframe(display_df_mv, use_container_width=True, height=300, hide_index=True)
+
+    # ── Current anomaly dataset ────────────────────────────────────────────
+    st.divider()
+    st.subheader("Anomaly Detection Dataset")
+
+    if not os.path.exists(ANOMALY_CSV):
+        st.warning("anomaly_detection.csv not found.")
+    else:
+        df_an = pd.read_csv(ANOMALY_CSV)
+        
+        m1, m2, m3, m4 = st.columns(4)
+        with m1:
+            metric_card("Total Records", str(len(df_an)))
+        with m2:
+            metric_card("Date Range", "165 months")
+        with m3:
+            metric_card("Imputed Rows", "0")
+        with m4:
+            metric_card("Features", str(len(df_an.columns)))
+
+        st.caption(
+            f"Date range: {pd.to_datetime(df_an['month']).min().strftime('%Y-%m')} → "
+            f"{pd.to_datetime(df_an['month']).max().strftime('%Y-%m')}"
+        )
+        display_df_an = df_an.copy()
+        st.dataframe(display_df_an, use_container_width=True, height=300, hide_index=True)
 
     # ── Other available datasets ───────────────────────────────────────────
     st.divider()
     st.subheader("Other Processed Files")
     other_files = [
         f for f in os.listdir(PROCESSED_DIR)
-        if f.endswith(".csv") and f != "forecast_dataset.csv"
+        if f.endswith(".csv") and f not in ["forecast_univariant.csv", "forecast_multivariant.csv", "anomaly_detection.csv"]
     ]
     if other_files:
         for fname in other_files:

@@ -27,11 +27,13 @@ RAW = os.path.join(ROOT, "data", "raw")
 SOURCES = os.path.join(ROOT, "data", "sources")
 PROCESSED = os.path.join(ROOT, "data", "processed")
 
-TEA_RAW = os.path.join(RAW, "monthly_tea_raw.csv")
 USD_CSV = os.path.join(SOURCES, "usd_lkr_historical.csv")
 WEATHER_DIR = os.path.join(SOURCES, "sri_lanka_weather_data")
 EXPORT_CSV = os.path.join(SOURCES, "Export_Data_2011_to_2026.csv")
 PRODUCTION_CSV = os.path.join(SOURCES, "Production_Data_2011_to_2026.csv")
+CRUDE_CSV = os.path.join(SOURCES, "crude_oil_history.csv")
+BRENT_CSV = os.path.join(SOURCES, "brent_crude_history.csv")
+FUEL_CSV = os.path.join(SOURCES, "fuel_prices_lk.csv")
 
 # Tea-growing districts -> elevation zone (matches the High/Medium/Low production split).
 # The per-district weather files include Nuwara Eliya & Badulla (high-grown); dry-zone /
@@ -191,26 +193,48 @@ def load_weather_monthly() -> pd.DataFrame:
 
 
 # ---------------------------------------------------------------------------
-# Tea: hand-extracted monthly raw
+# Fuel and Oil: New Datasets
 # ---------------------------------------------------------------------------
-def load_tea_monthly() -> pd.DataFrame:
-    """Load monthly tea production/export; clean known cumulative-format rows."""
-    df = pd.read_csv(TEA_RAW)
-    df["month"] = pd.to_datetime(df["month"], format="%Y-%m", errors="coerce")
-    df = df.dropna(subset=["month"])
+def _load_and_ffill_monthly(path: str, val_col: str, new_name: str) -> pd.DataFrame:
+    df = pd.read_csv(path)
+    df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
+    df["month"] = df["Date"].dt.to_period("M").dt.to_timestamp()
+    df[val_col] = pd.to_numeric(df[val_col], errors="coerce")
+    df = df.groupby("month")[val_col].mean().reset_index()
+    df = df.rename(columns={val_col: new_name})
+    if not df.empty:
+        spine = pd.DataFrame({"month": pd.date_range(df["month"].min(), df["month"].max(), freq="MS")})
+        df = spine.merge(df, on="month", how="left")
+        df[new_name] = df[new_name].ffill().bfill()
+    return df
 
-    # 2021-08 PDF reports CUMULATIVE (Jan-Aug) exports, not a single month.
-    # Keep its production (valid single-month); drop its export/value/fob.
-    aug21 = df["month"] == pd.Timestamp("2021-08-01")
-    df.loc[aug21, ["export_mt", "export_value_lkr_mn", "fob_rs_kg"]] = pd.NA
+def load_crude_oil_monthly() -> pd.DataFrame:
+    return _load_and_ffill_monthly(CRUDE_CSV, "Value", "crude_oil_price")
 
-    # 2022-12 export missing from source; derive from official annual total.
-    known_2022 = df[(df.month.dt.year == 2022) & df.export_mt.notna()]["export_mt"].sum()
-    dec22 = df["month"] == pd.Timestamp("2022-12-01")
-    df.loc[dec22, "export_mt"] = ANNUAL_EXPORT_MT[2022] - known_2022
+def load_brent_crude_monthly() -> pd.DataFrame:
+    return _load_and_ffill_monthly(BRENT_CSV, "Value", "brent_crude_price")
 
-    # mark which export points are derived rather than read from a report
-    df["export_derived"] = dec22
+def load_fuel_prices_monthly() -> pd.DataFrame:
+    df = pd.read_csv(FUEL_CSV)
+    df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
+    df["month"] = df["Date"].dt.to_period("M").dt.to_timestamp()
+    for col in ["LP 92", "LAD", "LK", "LIK"]:
+        if col in df.columns:
+            df[col] = pd.to_numeric(df[col], errors="coerce")
+    
+    if "LK" in df.columns and "LIK" in df.columns:
+        df["kerosene_price"] = df["LK"].combine_first(df["LIK"])
+    else:
+        df["kerosene_price"] = df.get("LK", df.get("LIK", pd.Series(dtype=float)))
+    
+    df = df.rename(columns={"LP 92": "fuel_lp92", "LAD": "fuel_lad"})
+    df = df.groupby("month")[["fuel_lp92", "fuel_lad", "kerosene_price"]].mean().reset_index()
+    if not df.empty:
+        spine = pd.DataFrame({"month": pd.date_range(df["month"].min(), df["month"].max(), freq="MS")})
+        df = spine.merge(df, on="month", how="left")
+        df["fuel_lp92"] = df["fuel_lp92"].ffill().bfill()
+        df["fuel_lad"] = df["fuel_lad"].ffill().bfill()
+        df["kerosene_price"] = df["kerosene_price"].ffill().bfill()
     return df
 
 
@@ -218,17 +242,35 @@ def load_tea_monthly() -> pd.DataFrame:
 # Merge -> single monthly master
 # ---------------------------------------------------------------------------
 def build_master() -> pd.DataFrame:
-    """Left-join tea (the spine) with macro + weather on month."""
-    tea = load_tea_monthly()
+    """Build a continuous monthly master frame from 2011 to 2026."""
+    exp = load_export_monthly()
+    prod = load_production_monthly()
     macro = load_macro_monthly()
     weather = load_weather_monthly()
+    crude = load_crude_oil_monthly()
+    brent = load_brent_crude_monthly()
+    fuel = load_fuel_prices_monthly()
+
+    spine = pd.DataFrame({"month": pd.date_range(exp["month"].min(), exp["month"].max(), freq="MS")})
 
     master = (
-        tea.merge(macro, on="month", how="left")
+        spine.merge(exp, on="month", how="left")
+        .merge(prod, on="month", how="left")
+        .merge(macro, on="month", how="left")
         .merge(weather, on="month", how="left")
+        .merge(crude, on="month", how="left")
+        .merge(brent, on="month", how="left")
+        .merge(fuel, on="month", how="left")
         .sort_values("month")
         .reset_index(drop=True)
     )
+    
+    master["export_derived"] = False
+    
+    for col in ["crude_oil_price", "brent_crude_price", "fuel_lp92", "fuel_lad", "kerosene_price"]:
+        if col in master.columns:
+            master[col] = master[col].ffill().bfill()
+            
     return master
 
 
@@ -310,9 +352,9 @@ def build_anomaly_dataset(master: pd.DataFrame | None = None) -> pd.DataFrame:
     if master is None:
         master = build_master()
 
-    feature_cols = ["production_mt", "export_mt", "export_value_lkr_mn",
-                    "fob_rs_kg", "usd_lkr_avg", "usd_lkr_volatility",
-                    "rainfall_mm", "temp_mean"]
+    feature_cols = ["production_mt", "export_mt", "usd_lkr_avg", "usd_lkr_volatility",
+                    "rainfall_mm", "temp_mean", "crude_oil_price",
+                    "brent_crude_price", "fuel_lp92", "fuel_lad", "kerosene_price"]
     an = master[["month"] + feature_cols + ["export_derived"]].copy()
 
     # Isolation Forest cannot take NaN; require every feature present. This also
@@ -332,7 +374,7 @@ if __name__ == "__main__":
 
     # View 1 - univariate forecast dataset (unchanged; keeps the current app working)
     fc = build_forecast_dataset()
-    fc.to_csv(os.path.join(PROCESSED, "forecast_dataset.csv"), index=False)
+    fc.to_csv(os.path.join(PROCESSED, "forecast_univariant.csv"), index=False)
     print("=== FORECAST (Prophet, univariate export volume) ===")
     print(_summ(fc, ["y"]))
     print(f"range {fc.ds.min():%Y-%m} -> {fc.ds.max():%Y-%m}; imputed y: {int(fc.y_imputed.sum())}")
@@ -341,11 +383,17 @@ if __name__ == "__main__":
 
     # View 1b - multivariate forecast dataset (ds, y + production/FX/weather regressors)
     mv = build_multivariate_dataset()
-    mv.to_csv(os.path.join(PROCESSED, "forecast_multivariate.csv"), index=False)
+    mv.to_csv(os.path.join(PROCESSED, "forecast_multivariant.csv"), index=False)
     print("\n=== MULTIVARIATE (Prophet + regressors) ===")
     print(_summ(mv, ["y"] + MV_REGRESSORS))
     print(f"range {mv.ds.min():%Y-%m} -> {mv.ds.max():%Y-%m}; "
           f"imputed production: {int(mv.production_mt_imputed.sum())}")
+          
+    # View 2 - Anomaly detection dataset
+    an = build_anomaly_dataset()
+    an.to_csv(os.path.join(PROCESSED, "anomaly_detection.csv"), index=False)
+    print("\n=== ANOMALY DETECTION ===")
+    print(_summ(an, ["export_mt"]))
 
     # Processed driver series (committed so the repo reproduces without the raw sources)
     prod = load_production_monthly().merge(load_production_by_zone(), on="month", how="left")
@@ -353,5 +401,5 @@ if __name__ == "__main__":
     load_macro_monthly().to_csv(os.path.join(PROCESSED, "fx_monthly.csv"), index=False)
     load_weather_monthly().to_csv(os.path.join(PROCESSED, "weather_tea_monthly.csv"), index=False)
 
-    print("\nWrote -> data/processed/: forecast_dataset.csv, forecast_multivariate.csv, "
-          "production_monthly.csv, fx_monthly.csv, weather_tea_monthly.csv")
+    print("\nWrote -> data/processed/: forecast_univariant.csv, forecast_multivariant.csv, "
+          "anomaly_detection.csv, production_monthly.csv, fx_monthly.csv, weather_tea_monthly.csv")

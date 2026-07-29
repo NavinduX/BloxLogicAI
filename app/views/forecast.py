@@ -27,15 +27,12 @@ def get_data(model_type: str = "univariate") -> pd.DataFrame:
     """Forecast dataset (ds, y); build it from sources if not yet generated."""
     if model_type == "univariate":
         path = fc.DATA
-        builder = data_loader.build_forecast_dataset
     else:
         path = fc.MV_DATA
-        builder = data_loader.build_multivariate_dataset
 
     if not os.path.exists(path):
-        df = builder()
-        os.makedirs(os.path.dirname(path), exist_ok=True)
-        df.to_csv(path, index=False)
+        st.error(f"Missing dataset at {path}. Run the data loader first.")
+        st.stop()
     df = pd.read_csv(path, parse_dates=["ds"])
     if "y_imputed" in df.columns:
         df["y_imputed"] = df["y_imputed"].astype(bool)
@@ -115,11 +112,6 @@ def render() -> None:
     show_imputed = st.sidebar.checkbox("Mark interpolated months", value=True)
 
     df = get_data(model_type)
-
-    if st.sidebar.button("🔄 Retrain model", use_container_width=True):
-        with st.spinner(f"Retraining {model_type} model and backtesting…"):
-            retrain(df, model_type)
-        st.sidebar.success(f"{model_type.capitalize()} model retrained.")
 
     metrics = load_metrics(model_type)
     forecast = get_forecast(model_type, horizon)

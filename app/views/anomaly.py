@@ -30,10 +30,22 @@ def _badge(severity: str) -> str:
 
 
 def render() -> None:
+    try:
+        import pandas as pd
+        from app.config import ANOMALY_CSV
+        df_an = pd.read_csv(ANOMALY_CSV)
+        start_date = pd.to_datetime(df_an['month']).min().strftime('%Y-%m')
+        end_date = pd.to_datetime(df_an['month']).max().strftime('%Y-%m')
+        obs_count = len(df_an)
+    except Exception:
+        start_date = "2011-10"
+        end_date = "2026-04"
+        obs_count = 165
+
     st.header("Anomaly Detection")
     st.caption(
-        "Supply chain disruptions identified by Isolation Forest — "
-        "historical period 2019–2023."
+        f"Supply chain disruptions identified by Isolation Forest — "
+        f"historical period {start_date} to {end_date}."
     )
 
     # ── Filter row ───────────────────────────────────────────────────────────
@@ -53,10 +65,11 @@ def render() -> None:
     )
 
     with col_info:
+        st.markdown("<div style='margin-top:28px'></div>", unsafe_allow_html=True)
         st.info(
             f"**{len(alerts)}** alert(s) shown  ·  "
             "Model: Isolation Forest  ·  "
-            "Features: export volume, production, USD/LKR, rainfall, temperature",
+            "Features: export volume, production, USD/LKR, rainfall, temperature, crude oil, fuel prices",
             icon=None,
         )
 
@@ -100,10 +113,10 @@ def render() -> None:
     # ── Methodology note ─────────────────────────────────────────────────────
     with st.expander("About this model"):
         st.markdown(
-            """
+            f"""
 **Algorithm:** Isolation Forest (scikit-learn)
 
-**Training window:** 2019-01 to 2023-12 (~60 clean monthly observations)
+**Training window:** {start_date} to {end_date} (~{obs_count} clean monthly observations)
 
 **Features used:**
 - Monthly export volume (MT)
@@ -111,6 +124,8 @@ def render() -> None:
 - USD/LKR exchange rate (monthly average)
 - Rainfall (mm) — production-weighted tea regions
 - Mean temperature (°C) — production-weighted tea regions
+- Crude Oil Price & Brent Crude Price
+- Fuel Prices (LP 92, Auto Diesel, Kerosene)
 
 **How it works:** Isolation Forest isolates anomalies by building random decision trees.
 Points that are isolated with fewer splits are flagged as anomalies. The model assigns
