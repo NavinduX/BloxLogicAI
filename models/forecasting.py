@@ -7,9 +7,9 @@ Two interchangeable models share one pipeline, selected at the command line:
     python models/forecasting.py --model multivariate
 
 * **Univariate** learns trend, yearly seasonality and the 2022 economic-crisis
-  shock from export history alone (data/processed/forecast_dataset.csv: ds, y MT).
+  shock from export history alone (data/processed/forecast_univariant.csv: ds, y MT).
 * **Multivariate** adds production, USD/LKR and tea-region weather as Prophet
-  regressors (data/processed/forecast_multivariate.csv). Future driver values are
+  regressors (data/processed/forecast_multivariant.csv). Future driver values are
   cascade-forecast (each driver projected by its own Prophet) so the model can
   predict ahead without leaking held-out data.
 
@@ -44,12 +44,12 @@ SAVED = os.path.join(ROOT, "models", "saved")
 
 # Univariate dataset/artefacts. NOTE: DATA/MODEL_PATH/METRICS_PATH keep their
 # original names because the Streamlit app and tests import them directly.
-DATA = os.path.join(PROCESSED, "forecast_dataset.csv")
+DATA = os.path.join(PROCESSED, "forecast_univariant.csv")
 MODEL_PATH = os.path.join(SAVED, "forecast_prophet.joblib")
 METRICS_PATH = os.path.join(SAVED, "forecast_metrics.json")
 
 # Multivariate dataset/artefacts (kept separate so neither model overwrites the other).
-MV_DATA = os.path.join(PROCESSED, "forecast_multivariate.csv")
+MV_DATA = os.path.join(PROCESSED, "forecast_multivariant.csv")
 MV_MODEL_PATH = os.path.join(SAVED, "forecast_prophet_mv.joblib")
 MV_METRICS_PATH = os.path.join(SAVED, "forecast_metrics_mv.json")
 

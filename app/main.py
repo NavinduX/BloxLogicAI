@@ -67,7 +67,8 @@ else:
         NAV = [
             "Dashboard",
             "Dataset Management",
-            "Model Management",
+            "Forecast Model",
+            "Anomaly Detection Model",
             "Blockchain Ledger",
             "User Management",
             "Analytics",
@@ -88,8 +89,10 @@ else:
             from app.views import admin_dashboard; admin_dashboard.render()
         elif page == "Dataset Management":
             from app.views import admin_dataset; admin_dataset.render()
-        elif page == "Model Management":
-            from app.views import admin_model; admin_model.render()
+        elif page == "Forecast Model":
+            from app.views import admin_forecast; admin_forecast.render()
+        elif page == "Anomaly Detection Model":
+            from app.views import admin_anomaly; admin_anomaly.render()
         elif page == "Blockchain Ledger":
             from app.views import admin_ledger; admin_ledger.render()
         elif page == "User Management":
