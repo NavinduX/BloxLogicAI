@@ -1,5 +1,6 @@
 """
-Tests for blockchain/ledger.py — verifies SHA-256 chain integrity, filtering, and tamper detection.
+Tests for blockchain/ledger.py — verifies SHA-256 chain integrity, per-batch
+isolation, stage-sequence enforcement, filtering, and tamper detection.
 """
 
 from __future__ import annotations
@@ -14,9 +15,11 @@ import pytest
 
 from blockchain.ledger import (
     GENESIS_HASH,
+    InvalidStageError,
     _hash_block,
     add_block,
     get_batch,
+    next_stage,
     verify_chain,
 )
 
@@ -32,7 +35,7 @@ def tmp_ledger(tmp_path):
 
 
 def _seed(path: str) -> list[dict]:
-    """Write 3 demo blocks to *path* and return them."""
+    """Write demo blocks to *path* and return them."""
     with patch("blockchain.ledger.LEDGER_PATH", path):
         add_block("TEA001", "Harvested", "Nuwara Eliya", "2,000 kg BOP", "2026-01-01T08:00:00")
         add_block("TEA001", "Processed", "Factory A",    "Dried at 90°C",  "2026-01-03T10:00:00")
@@ -46,22 +49,23 @@ def _seed(path: str) -> list[dict]:
 # ---------------------------------------------------------------------------
 
 def test_hash_block_deterministic():
-    h1 = _hash_block("TEA001", "Harvested", "Nuwara Eliya", "test", "2026-01-01T08:00:00", GENESIS_HASH)
-    h2 = _hash_block("TEA001", "Harvested", "Nuwara Eliya", "test", "2026-01-01T08:00:00", GENESIS_HASH)
+    h1 = _hash_block("TEA001", 1, "Harvested", "Nuwara Eliya", "test", "2026-01-01T08:00:00", GENESIS_HASH)
+    h2 = _hash_block("TEA001", 1, "Harvested", "Nuwara Eliya", "test", "2026-01-01T08:00:00", GENESIS_HASH)
     assert h1 == h2
     assert len(h1) == 64  # SHA-256 hex digest is always 64 chars
 
 
 def test_hash_block_sensitive_to_each_field():
-    base = ("TEA001", "Harvested", "Nuwara Eliya", "test", "2026-01-01T08:00:00", GENESIS_HASH)
+    base = ("TEA001", 1, "Harvested", "Nuwara Eliya", "test", "2026-01-01T08:00:00", GENESIS_HASH)
     base_hash = _hash_block(*base)
     variants = [
-        ("TEA002", "Harvested", "Nuwara Eliya", "test", "2026-01-01T08:00:00", GENESIS_HASH),
-        ("TEA001", "Processed", "Nuwara Eliya", "test", "2026-01-01T08:00:00", GENESIS_HASH),
-        ("TEA001", "Harvested", "Other Estate", "test", "2026-01-01T08:00:00", GENESIS_HASH),
-        ("TEA001", "Harvested", "Nuwara Eliya", "diff", "2026-01-01T08:00:00", GENESIS_HASH),
-        ("TEA001", "Harvested", "Nuwara Eliya", "test", "2026-01-02T08:00:00", GENESIS_HASH),
-        ("TEA001", "Harvested", "Nuwara Eliya", "test", "2026-01-01T08:00:00", "a" * 16),
+        ("TEA002", 1, "Harvested", "Nuwara Eliya", "test", "2026-01-01T08:00:00", GENESIS_HASH),
+        ("TEA001", 2, "Harvested", "Nuwara Eliya", "test", "2026-01-01T08:00:00", GENESIS_HASH),
+        ("TEA001", 1, "Processed", "Nuwara Eliya", "test", "2026-01-01T08:00:00", GENESIS_HASH),
+        ("TEA001", 1, "Harvested", "Other Estate", "test", "2026-01-01T08:00:00", GENESIS_HASH),
+        ("TEA001", 1, "Harvested", "Nuwara Eliya", "diff", "2026-01-01T08:00:00", GENESIS_HASH),
+        ("TEA001", 1, "Harvested", "Nuwara Eliya", "test", "2026-01-02T08:00:00", GENESIS_HASH),
+        ("TEA001", 1, "Harvested", "Nuwara Eliya", "test", "2026-01-01T08:00:00", "a" * 16),
     ]
     for args in variants:
         assert _hash_block(*args) != base_hash
@@ -101,8 +105,23 @@ def test_verify_chain_detects_backlink_break(tmp_ledger):
     assert verify_chain(tampered) is False
 
 
+def test_verify_chain_per_batch_isolation(tmp_ledger):
+    """Tampering one batch's block must not invalidate another batch's chain."""
+    blocks = _seed(tmp_ledger)
+    tampered = copy.deepcopy(blocks)
+    tea002_block = next(b for b in tampered if b["batch_id"] == "TEA002")
+    tea002_block["location"] = "Hacked Location"
+
+    tea001_blocks = [b for b in tampered if b["batch_id"] == "TEA001"]
+    tea002_blocks = [b for b in tampered if b["batch_id"] == "TEA002"]
+
+    assert verify_chain(tea001_blocks) is True
+    assert verify_chain(tea002_blocks) is False
+    assert verify_chain(tampered) is False  # whole-ledger check still catches it
+
+
 # ---------------------------------------------------------------------------
-# get_batch
+# get_batch / next_stage
 # ---------------------------------------------------------------------------
 
 def test_get_batch_filters_by_id(tmp_ledger):
@@ -126,20 +145,54 @@ def test_get_batch_case_insensitive(tmp_ledger):
     assert len(lower) == len(upper) == 2
 
 
+def test_next_stage_progression(tmp_ledger):
+    with patch("blockchain.ledger.LEDGER_PATH", tmp_ledger):
+        assert next_stage("TEA001") == "Harvested"
+        add_block("TEA001", "Harvested", "Estate A", "details")
+        assert next_stage("TEA001") == "Processed"
+
+
 # ---------------------------------------------------------------------------
 # add_block round-trip
 # ---------------------------------------------------------------------------
 
-def test_add_block_increments_block_num(tmp_ledger):
+def test_add_block_seq_is_per_batch(tmp_ledger):
     with patch("blockchain.ledger.LEDGER_PATH", tmp_ledger):
         b1 = add_block("TEA001", "Harvested", "Estate A", "details")
-        b2 = add_block("TEA001", "Processed", "Factory B", "details")
-    assert b1["block_num"] == 1
-    assert b2["block_num"] == 2
-    assert b2["previous_hash"] == b1["current_hash"]
+        b2 = add_block("TEA002", "Harvested", "Estate B", "details")
+        b3 = add_block("TEA001", "Processed", "Factory B", "details")
+    assert b1["seq"] == 1
+    assert b2["seq"] == 1  # independent counter for TEA002
+    assert b3["seq"] == 2
+    assert b3["previous_hash"] == b1["current_hash"]
 
 
 def test_add_block_genesis_previous_hash(tmp_ledger):
     with patch("blockchain.ledger.LEDGER_PATH", tmp_ledger):
         b = add_block("TEA001", "Harvested", "Estate A", "details")
     assert b["previous_hash"] == GENESIS_HASH
+
+
+def test_add_block_enforces_stage_order(tmp_ledger):
+    with patch("blockchain.ledger.LEDGER_PATH", tmp_ledger):
+        with pytest.raises(InvalidStageError):
+            add_block("TEA001", "Processed", "Estate A", "details")  # must start at Harvested
+
+        add_block("TEA001", "Harvested", "Estate A", "details")
+        with pytest.raises(InvalidStageError):
+            add_block("TEA001", "Exported", "Estate A", "details")  # skips stages
+
+
+def test_add_block_rejects_duplicate_stage(tmp_ledger):
+    with patch("blockchain.ledger.LEDGER_PATH", tmp_ledger):
+        add_block("TEA001", "Harvested", "Estate A", "details")
+        with pytest.raises(InvalidStageError):
+            add_block("TEA001", "Harvested", "Estate A", "details")
+
+
+def test_add_block_rejects_after_exported(tmp_ledger):
+    with patch("blockchain.ledger.LEDGER_PATH", tmp_ledger):
+        for stage in ["Harvested", "Processed", "Blended", "Packaged", "Exported"]:
+            add_block("TEA001", stage, "Estate A", "details")
+        with pytest.raises(InvalidStageError):
+            add_block("TEA001", "Exported", "Estate A", "details")
