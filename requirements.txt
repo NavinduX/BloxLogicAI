@@ -8,6 +8,7 @@ matplotlib==3.9.0
 plotly==5.22.0
 joblib==1.4.2
 qrcode[pil]==7.4.2
+pyzbar==0.1.9  # QR decoding for in-app camera scanner (bundles libzbar DLLs on Windows)
 openpyxl==3.1.2
 Pillow==10.3.0
 pytest==8.2.2  # dev/testing
