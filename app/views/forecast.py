@@ -31,8 +31,7 @@ def get_data(model_type: str = "univariate") -> pd.DataFrame:
         path = fc.MV_DATA
 
     if not os.path.exists(path):
-        st.error(f"Missing dataset at {path}. Run the data loader first.")
-        st.stop()
+        raise FileNotFoundError(f"Missing dataset at {path}. Run the data loader first.")
     df = pd.read_csv(path, parse_dates=["ds"])
     if "y_imputed" in df.columns:
         df["y_imputed"] = df["y_imputed"].astype(bool)
@@ -111,10 +110,13 @@ def render() -> None:
     show_band = st.sidebar.checkbox("Show confidence interval", value=True)
     show_imputed = st.sidebar.checkbox("Mark interpolated months", value=True)
 
-    df = get_data(model_type)
-
-    metrics = load_metrics(model_type)
-    forecast = get_forecast(model_type, horizon)
+    try:
+        df = get_data(model_type)
+        metrics = load_metrics(model_type)
+        forecast = get_forecast(model_type, horizon)
+    except FileNotFoundError:
+        st.info("ℹ️ Forecast models and datasets are currently unavailable. Please log in as an administrator to generate datasets and train the AI models.")
+        return
 
     # -----------------------------------------------------------------------
     # Header + KPIs

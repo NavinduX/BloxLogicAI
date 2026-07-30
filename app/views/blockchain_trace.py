@@ -8,9 +8,39 @@ import html
 
 import streamlit as st
 
-from blockchain.ledger import get_batch, load_ledger, verify_chain
+from blockchain.ledger import STAGE_ORDER, get_batch, verify_chain
+from blockchain.qr_generator import (
+    decode_qr_image,
+    extract_batch_id,
+    format_batch_trace,
+    generate_qr_png_bytes,
+)
 
-_STAGE_ORDER = ["Harvested", "Processed", "Blended", "Packaged", "Exported"]
+
+def _render_qr_scanner() -> None:
+    """Camera-based QR scanner panel, shown when the user clicks the scan icon."""
+    with st.container(border=True):
+        st.markdown("**Scan a batch's QR code**")
+        st.caption("Point your camera at a batch's QR code, then take the photo.")
+
+        cam_key = f"qr_scanner_camera_{st.session_state.get('qr_scan_session', 0)}"
+        photo = st.camera_input("Scan QR", label_visibility="collapsed", key=cam_key)
+
+        if photo is not None:
+            decoded_text = decode_qr_image(photo.getvalue())
+            scanned_id = extract_batch_id(decoded_text) if decoded_text else None
+            if scanned_id:
+                st.session_state["scanned_batch_id"] = scanned_id
+                st.session_state["show_scanner"] = False
+                st.rerun()
+            elif decoded_text:
+                st.error("That doesn't look like a BloxLogicAI batch QR code.")
+            else:
+                st.error("No QR code detected in the photo — try again with better lighting or focus.")
+
+        if st.button("Cancel", key="cancel_scan_btn"):
+            st.session_state["show_scanner"] = False
+            st.rerun()
 
 
 def render() -> None:
@@ -21,25 +51,43 @@ def render() -> None:
     )
 
     # ── Search ───────────────────────────────────────────────────────────────
-    with st.form("batch_search"):
-        col_input, col_btn = st.columns([4, 1])
-        with col_input:
-            batch_id = st.text_input(
-                "Batch ID",
-                placeholder="e.g. TEA001",
-                label_visibility="collapsed",
-            )
-        with col_btn:
-            search = st.form_submit_button("Search", use_container_width=True)
+    row_form, row_scan = st.columns([5, 1])
+    with row_form:
+        with st.form("batch_search"):
+            col_input, col_btn = st.columns([4, 1])
+            with col_input:
+                batch_id_typed = st.text_input(
+                    "Batch ID",
+                    placeholder="e.g. TEA001",
+                    label_visibility="collapsed",
+                )
+            with col_btn:
+                search = st.form_submit_button("Search", use_container_width=True)
+    with row_scan:
+        st.markdown("<div style='height:28px'></div>", unsafe_allow_html=True)
+        if st.button("📷", help="Scan a batch's QR code with your camera", use_container_width=True):
+            opening = not st.session_state.get("show_scanner", False)
+            st.session_state["show_scanner"] = opening
+            if opening:
+                st.session_state["qr_scan_session"] = st.session_state.get("qr_scan_session", 0) + 1
 
     st.caption("Available demo batches: **TEA001** (exported to UK) · **TEA002** (awaiting export) · **TEA003** (exported to UAE)")
 
-    if not search and not batch_id:
-        st.info("Enter a Batch ID above and click Search to trace a tea batch.")
-        return
+    if st.session_state.get("show_scanner"):
+        _render_qr_scanner()
+
+    # A typed Batch ID always wins; otherwise fall back to the last QR scan.
+    if batch_id_typed:
+        batch_id = batch_id_typed.strip()
+        st.session_state.pop("scanned_batch_id", None)
+    else:
+        batch_id = st.session_state.get("scanned_batch_id")
 
     if not batch_id:
-        st.warning("Please enter a Batch ID.")
+        if search:
+            st.warning("Please enter a Batch ID.")
+        else:
+            st.info("Enter a Batch ID above, click Search, or scan a batch's QR code to trace a tea batch.")
         return
 
     # ── Lookup ───────────────────────────────────────────────────────────────
@@ -52,9 +100,8 @@ def render() -> None:
         )
         return
 
-    # Full-chain verification
-    all_blocks = load_ledger()
-    chain_ok = verify_chain(all_blocks)
+    # Verify this batch's own chain (independent of any other batch's chain)
+    chain_ok = verify_chain(batch_blocks)
     validity_html = (
         '<span class="chain-valid">VALID ✓</span>'
         if chain_ok
@@ -75,6 +122,30 @@ def render() -> None:
         st.metric("Recorded Events", len(batch_blocks))
         last_ts = batch_blocks[-1]["timestamp"].split("T")[0]
         st.metric("Last Updated", last_ts)
+
+    st.divider()
+
+    # ── QR code ──────────────────────────────────────────────────────────────
+    qcol1, qcol2 = st.columns([1, 4])
+    with qcol1:
+        qr_png = generate_qr_png_bytes(format_batch_trace(batch_id, batch_blocks))
+        st.image(qr_png, width=280, caption="Scan for full batch history")
+        st.download_button(
+            "Download QR",
+            data=qr_png,
+            file_name=f"{batch_id.upper()}_qr.png",
+            mime="image/png",
+        )
+    with qcol2:
+        st.markdown(
+            "<div style='color:#666;font-size:13px;padding-top:8px'>"
+            "Scan this code with any phone camera or QR app to read this "
+            "batch's full journey — every stage, location, and detail — "
+            "directly, with no need to open this app or connect to a "
+            "network. To additionally verify the SHA-256 chain's integrity, "
+            "search this batch's ID in the app.</div>",
+            unsafe_allow_html=True,
+        )
 
     st.divider()
 
@@ -103,7 +174,7 @@ def render() -> None:
         with h_col:
             st.markdown(
                 f"<div style='text-align:right;font-size:12px;color:#888'>"
-                f"Block #{blk['block_num']}<br>"
+                f"Block #{blk['seq']}<br>"
                 f"<code style='font-size:11px'>{blk['current_hash'][:16]}…</code>"
                 f"</div>",
                 unsafe_allow_html=True,
@@ -117,7 +188,7 @@ def render() -> None:
             )
 
     # Show pending stages (not yet recorded)
-    pending = [s for s in _STAGE_ORDER if s not in completed_stages]
+    pending = [s for s in STAGE_ORDER if s not in completed_stages]
     if pending:
         st.markdown("")
         st.markdown(
