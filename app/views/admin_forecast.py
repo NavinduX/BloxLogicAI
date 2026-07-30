@@ -78,24 +78,29 @@ def render() -> None:
 
 
 def _run_training() -> None:
-    with st.spinner("Training Prophet model and running backtest…"):
+    with st.spinner("Training Univariate & Multivariate Prophet models..."):
         try:
             from models import forecasting as fc
-            import pandas as pd
-            df = pd.read_csv(FORECAST_CSV, parse_dates=["ds"])
-            metrics = fc.evaluate(df[["ds", "y"]], test_periods=12)
-            model   = fc.train_model(df[["ds", "y"]])
-            fc.save_model(model, fc.MODEL_PATH)
-            os.makedirs(fc.SAVED, exist_ok=True)
-            with open(fc.METRICS_PATH, "w") as fh:
-                json.dump(metrics, fh, indent=2)
+            
+            # Train Univariate
+            df_uni = fc.load_forecast_data()
+            res_uni = fc.run_univariate_model(df_uni)
+            
+            # Train Multivariate
+            df_mv = fc.load_multivariate_data()
+            res_mv = fc.run_multivariate_model(df_mv)
+
             from app.views import forecast as forecast_view
             forecast_view.get_model.clear()
             forecast_view.get_forecast.clear()
             forecast_view.load_metrics.clear()
+            
+            metrics_uni = res_uni["metrics"]
+            metrics_mv = res_mv["metrics"]
+
             ts = datetime.now().strftime("%Y-%m-%d %H:%M")
-            entry = f"{ts} — Retrained · MAPE {metrics['mape']:.2f}% · MAE {metrics['mae']:,.0f} MT"
-            st.success(f"Model trained. MAPE: {metrics['mape']:.2f}%")
+            entry = f"{ts} — Retrained · Uni MAPE {metrics_uni['mape']:.2f}% · Multi MAPE {metrics_mv['mape']:.2f}%"
+            st.success(f"Models trained! Univariate MAPE: {metrics_uni['mape']:.2f}% | Multivariate MAPE: {metrics_mv['mape']:.2f}%")
             st.session_state.setdefault("forecast_log", []).append(entry)
             st.rerun()
         except Exception as exc:

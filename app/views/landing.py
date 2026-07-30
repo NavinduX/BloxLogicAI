@@ -36,24 +36,6 @@ FEATURES = [
     ),
 ]
 
-# 12-month forecast (May 2026 – Apr 2027) derived from the trained Prophet model.
-# Pre-computed here so the public page loads instantly without importing Prophet.
-_FORECAST = [
-    ("2026-05-01", 19_500, 17_800, 21_200),
-    ("2026-06-01", 21_800, 19_900, 23_700),
-    ("2026-07-01", 23_200, 21_100, 25_300),
-    ("2026-08-01", 24_500, 22_300, 26_700),
-    ("2026-09-01", 25_800, 23_500, 28_100),
-    ("2026-10-01", 26_200, 23_900, 28_500),
-    ("2026-11-01", 24_800, 22_600, 27_000),
-    ("2026-12-01", 22_500, 20_400, 24_600),
-    ("2027-01-01", 20_100, 18_000, 22_200),
-    ("2027-02-01", 19_500, 17_400, 21_600),
-    ("2027-03-01", 21_200, 19_000, 23_400),
-    ("2027-04-01", 18_900, 16_800, 21_000),
-]
-
-
 @st.cache_data(show_spinner=False)
 def _load_history() -> pd.DataFrame | None:
     if not os.path.exists(FORECAST_CSV):
@@ -91,12 +73,40 @@ def _render_forecast_preview() -> None:
         "12-month Prophet forecast · Shaded area = 90% confidence interval"
     )
 
-    history = _load_history()
+    try:
+        from app.config import FORECAST_CSV, MODEL_PATH
+        if not os.path.exists(FORECAST_CSV) or not os.path.exists(MODEL_PATH):
+            st.info("ℹ️ Live forecast data is currently unavailable. (Clean slate demo mode: please log in as an administrator to generate datasets and train the AI models).")
+            return
 
-    forecast_df = pd.DataFrame(
-        _FORECAST, columns=["ds", "yhat", "yhat_lower", "yhat_upper"]
-    )
-    forecast_df["ds"] = pd.to_datetime(forecast_df["ds"])
+        with st.spinner("Loading real-time forecast model..."):
+            from app.views.forecast import get_data, get_forecast, load_metrics
+            df = get_data("univariate")
+            forecast_full = get_forecast("univariate", horizon=12)
+            metrics = load_metrics("univariate")
+
+            last_date = df["ds"].max()
+            history = df.tail(48).reset_index(drop=True)
+            forecast_df = forecast_full[forecast_full["ds"] > last_date]
+
+            accuracy = f"{100 - metrics['mape']:.0f}%" if metrics else "91%"
+            accuracy_help = f"100% − MAPE ({metrics['mape']:.2f}%)" if metrics else "100% − MAPE"
+
+            next_month_val = forecast_df.iloc[0]["yhat"] if len(forecast_df) else 0
+            next_month_label = forecast_df.iloc[0]["ds"].strftime("%B %Y") if len(forecast_df) else "Next month"
+
+            peak_idx = forecast_df["yhat"].idxmax() if len(forecast_df) else None
+            peak_val = forecast_df.loc[peak_idx]["yhat"] if peak_idx is not None else 0
+            peak_label = forecast_df.loc[peak_idx]["ds"].strftime("%B %Y") if peak_idx is not None else ""
+
+            history_months = len(df)
+            start_hist = df.ds.min().strftime("%b %Y")
+            end_hist = df.ds.max().strftime("%b %Y")
+            boundary_date = last_date.strftime("%Y-%m-%d")
+            
+    except Exception as e:
+        st.error("Failed to load live forecast data.")
+        return
 
     fig = go.Figure()
 
@@ -137,13 +147,13 @@ def _render_forecast_preview() -> None:
     # ── Forecast/history boundary marker ────────────────────────────────────
     fig.add_shape(
         type="line",
-        x0="2026-05-01", x1="2026-05-01",
+        x0=boundary_date, x1=boundary_date,
         y0=0, y1=1,
         xref="x", yref="paper",
         line=dict(color="#AAAAAA", width=1, dash="dot"),
     )
     fig.add_annotation(
-        x="2026-05-01", y=0.97,
+        x=boundary_date, y=0.97,
         xref="x", yref="paper",
         text="Forecast →",
         showarrow=False,
@@ -175,10 +185,10 @@ def _render_forecast_preview() -> None:
 
     # ── Summary stats below the chart ────────────────────────────────────────
     col1, col2, col3, col4 = st.columns(4)
-    col1.metric("Forecast Accuracy", "91%", help="100% − MAPE (9.06%)")
-    col2.metric("Next Month Forecast", "19,500 MT", help="May 2026 Prophet forecast")
-    col3.metric("Peak Forecast", "26,200 MT", help="October 2026")
-    col4.metric("Historical Data", "176 months", help="Oct 2011 – Apr 2026")
+    col1.metric("Forecast Accuracy", accuracy, help=accuracy_help)
+    col2.metric("Next Month Forecast", f"{next_month_val:,.0f} MT", help=f"{next_month_label} Prophet forecast")
+    col3.metric("Peak Forecast", f"{peak_val:,.0f} MT", help=peak_label)
+    col4.metric("Historical Data", f"{history_months} months", help=f"{start_hist} – {end_hist}")
 
 
 def _render_cta() -> None:
