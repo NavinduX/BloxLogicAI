@@ -1,0 +1,17 @@
+{
+  "model": "multivariate",
+  "test_periods": 12,
+  "mae": 1964.01,
+  "rmse": 2212.2,
+  "mape": 10.06,
+  "train_start": "2011-10-01",
+  "test_start": "2025-05-01",
+  "test_end": "2026-04-01",
+  "regressors": [
+    "production_mt",
+    "usd_lkr_avg",
+    "rainfall_mm",
+    "temp_mean"
+  ],
+  "future_drivers": "forecast"
+}
