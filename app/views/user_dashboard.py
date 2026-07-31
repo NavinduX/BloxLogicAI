@@ -113,11 +113,7 @@ def render() -> None:
     with right:
         st.subheader("Recent Anomaly Alerts")
         alerts = _load_alerts()
-        st.markdown(
-            '<div style="background:#FFFFFF;border:1px solid #C8E6C9;'
-            'border-radius:8px;padding:16px 20px;">',
-            unsafe_allow_html=True,
-        )
+
         if alerts:
             for alert in alerts[:3]:
                 st.markdown(
@@ -133,5 +129,5 @@ def render() -> None:
                 )
         else:
             st.info("No anomaly data loaded.")
-        st.markdown("</div>", unsafe_allow_html=True)
+
         st.caption("Open **Anomaly Detection** in the sidebar to view all alerts.")

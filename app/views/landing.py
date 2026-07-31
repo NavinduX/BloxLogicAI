@@ -5,6 +5,7 @@ Shows the hero, feature overview, a live forecast preview chart, and CTA buttons
 
 from __future__ import annotations
 
+import base64
 import os
 
 import pandas as pd
@@ -16,24 +17,48 @@ from app.config import FORECAST_CSV
 
 FEATURES = [
     (
-        ":material/trending_up:",
+        "trending_up",
         "Demand Forecasting",
         "Facebook Prophet projects monthly tea export volumes 12 months ahead, "
         "capturing seasonality and the 2022 economic-crisis trend break — "
-        "backtested to a **9% mean error**.",
+        "backtested to a 9% mean error.",
     ),
     (
-        ":material/troubleshoot:",
+        "troubleshoot",
         "Anomaly Detection",
         "Isolation Forest scans production, price, and weather signals to flag "
-        "supply-chain disruptions **before** they cascade through the export pipeline.",
+        "supply-chain disruptions before they cascade through the export pipeline.",
     ),
     (
-        ":material/link:",
+        "link",
         "Blockchain Traceability",
-        "Every tea batch is written to an immutable **SHA-256 hash chain**, giving "
+        "Every tea batch is written to an immutable SHA-256 hash chain, giving "
         "buyers and auditors a tamper-evident record from estate to export.",
     ),
+]
+
+FAQS = [
+    (
+        "What is BloxLogicAI?",
+        "BloxLogicAI is a unified platform combining predictive AI and blockchain technology "
+        "specifically designed for Sri Lanka's tea export supply chain. It provides tools "
+        "for forecasting, anomaly detection, and end-to-end traceability."
+    ),
+    (
+        "How accurate is the forecast model?",
+        "Our univariate Prophet model has been backtested to achieve ~91% accuracy (9% mean absolute percentage error), "
+        "effectively capturing both seasonal variations and macro-economic shocks."
+    ),
+    (
+        "What data is required to use the platform?",
+        "The platform primarily uses historical export volume data for univariate forecasting. For anomaly detection, "
+        "it correlates production data, auction prices, and weather signals to flag disruptions."
+    ),
+    (
+        "How does blockchain ensure transparency?",
+        "All tea batches are registered as transactions on an immutable ledger. Using cryptographic hashing (SHA-256), "
+        "any unauthorized alteration to the records breaks the chain, providing a tamper-evident history."
+    )
 ]
 
 @st.cache_data(show_spinner=False)
@@ -46,28 +71,59 @@ def _load_history() -> pd.DataFrame | None:
 
 
 def _render_hero() -> None:
-    st.title(":material/eco: BloxLogicAI")
-    st.subheader(
-        "AI- & Blockchain-Enabled Supply-Chain Intelligence "
-        "for Sri Lanka's Tea Industry"
-    )
-    st.write(
-        "Forecast monthly tea export demand, flag supply-chain disruptions, "
-        "and trace tea batches on an immutable ledger — all in one "
-        "lightweight, fully offline dashboard."
-    )
+    # Get base64 representation of the image
+    image_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "assets", "landing_page_hero_image.jpg")
+    encoded_string = ""
+    if os.path.exists(image_path):
+        with open(image_path, "rb") as image_file:
+            encoded_string = base64.b64encode(image_file.read()).decode()
+
+    bg_css = f"background-image: url(data:image/jpeg;base64,{encoded_string});" if encoded_string else "background-color: #2E7D32;"
+
+    hero_html = f"""
+    <div class="hero-container" style="{bg_css}">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1 class="hero-title">BloxLogicAI</h1>
+            <p class="hero-subtitle">
+                AI- & Blockchain-Enabled Supply-Chain Intelligence<br>
+                for Sri Lanka's Tea Industry
+            </p>
+        </div>
+    </div>
+    """
+    st.markdown(hero_html, unsafe_allow_html=True)
+    
+    # We use Streamlit columns to perfectly center the Get Started button
+    # visually slightly overlapping or right below the hero
+    _, col, _ = st.columns([1, 1, 1])
+    with col:
+        if st.button("Get Started", use_container_width=True, type="primary"):
+            auth.goto("register")
+            st.rerun()
 
 
 def _render_features() -> None:
-    st.header(":material/analytics: What BloxLogicAI does")
-    for column, (icon, title, blurb) in zip(st.columns(3, gap="large"), FEATURES):
-        with column:
-            st.subheader(f"{icon} {title}")
-            st.markdown(blurb)
+    st.markdown("<h2 style='text-align: center; margin-bottom: 40px;'>What BloxLogicAI does</h2>", unsafe_allow_html=True)
+    cols = st.columns(3, gap="large")
+    for col, (icon, title, blurb) in zip(cols, FEATURES):
+        with col:
+            st.markdown(
+                f"""
+                <div class="feature-card">
+                    <div class="feature-card-icon">
+                        <span class="material-symbols-outlined" style="font-size: 40px;">{icon}</span>
+                    </div>
+                    <div class="feature-card-title">{title}</div>
+                    <div class="feature-card-text">{blurb}</div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
 
 
 def _render_forecast_preview() -> None:
-    st.header(":material/show_chart: Live Forecast Preview")
+    st.markdown("<h2>Live Forecast Preview</h2>", unsafe_allow_html=True)
     st.caption(
         "Sri Lanka monthly tea export volume (MT) · Historical data + "
         "12-month Prophet forecast · Shaded area = 90% confidence interval"
@@ -105,7 +161,7 @@ def _render_forecast_preview() -> None:
             boundary_date = last_date.strftime("%Y-%m-%d")
             
     except Exception as e:
-        st.error("Failed to load live forecast data.")
+        st.error("Failed to load live forecast data. {e}")
         return
 
     fig = go.Figure()
@@ -158,10 +214,11 @@ def _render_forecast_preview() -> None:
         text="Forecast →",
         showarrow=False,
         xanchor="left",
-        font=dict(color="#888888", size=11),
+        font=dict(color="#888888", size=11, family="Inter"),
     )
 
     fig.update_layout(
+        font=dict(family="Inter", color="#1A1A1A"),
         height=340,
         margin=dict(t=20, b=10, l=10, r=10),
         hovermode="x unified",
@@ -193,22 +250,43 @@ def _render_forecast_preview() -> None:
 
 def _render_cta() -> None:
     st.write("")
-    st.markdown("##### :material/rocket_launch: Ready to explore the dashboard?")
+    st.markdown("<h3 style='text-align: center; margin-bottom: 20px;'>Ready to explore the dashboard?</h3>", unsafe_allow_html=True)
 
-    _, login_col, register_col, _ = st.columns([2, 1, 1, 2])
+    _, login_col, register_col, _ = st.columns([1.5, 1, 1, 1.5])
     with login_col:
-        if st.button(":material/login: Login", use_container_width=True):
+        if st.button("Login to Account", icon=":material/login:", use_container_width=True):
             auth.goto("login")
             st.rerun()
     with register_col:
         if st.button(
-            ":material/person_add: Register",
+            "Create Account",
+            icon=":material/person_add:",
             use_container_width=True,
             type="primary",
         ):
             auth.goto("register")
             st.rerun()
 
+def _render_faq() -> None:
+    st.markdown("<h2 style='text-align: center; margin-bottom: 30px;'>Frequently Asked Questions</h2>", unsafe_allow_html=True)
+    _, col, _ = st.columns([1, 4, 1])
+    with col:
+        for q, a in FAQS:
+            with st.expander(q):
+                st.write(a)
+
+def _render_footer() -> None:
+    footer_html = """
+    <div class="footer-container">
+        <div class="footer-text">© 2026 BloxLogicAI. All rights reserved.</div>
+        <div style="margin-top: 12px;">
+            <a href="#" class="footer-links">Privacy Policy</a>
+            <a href="#" class="footer-links">Terms of Service</a>
+            <a href="#" class="footer-links">Contact</a>
+        </div>
+    </div>
+    """
+    st.markdown(footer_html, unsafe_allow_html=True)
 
 def render() -> None:
     _render_hero()
@@ -218,8 +296,7 @@ def render() -> None:
     _render_features()
     st.divider()
     _render_cta()
-    st.write("")
-    st.caption(
-        "A BSc (Hons) Software Engineering dissertation prototype · "
-        "Cardiff Metropolitan University"
-    )
+    st.divider()
+    _render_faq()
+    _render_footer()
+

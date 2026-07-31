@@ -49,7 +49,7 @@ def render() -> None:
     )
 
     # ── Filter row ───────────────────────────────────────────────────────────
-    col_filter, col_info = st.columns([2, 5])
+    col_filter, col_info = st.columns([2, 5], vertical_alignment="bottom")
     with col_filter:
         severity_filter = st.selectbox(
             "Filter by severity",
@@ -65,7 +65,6 @@ def render() -> None:
     )
 
     with col_info:
-        st.markdown("<div style='margin-top:28px'></div>", unsafe_allow_html=True)
         st.info(
             f"**{len(alerts)}** alert(s) shown  ·  "
             "Model: Isolation Forest  ·  "

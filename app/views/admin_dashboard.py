@@ -106,11 +106,7 @@ def render() -> None:
 
     with left:
         st.subheader("Quick Actions")
-        st.markdown(
-            '<div style="background:#FFFFFF;border:1px solid #C8E6C9;'
-            'border-radius:8px;padding:16px 20px;">',
-            unsafe_allow_html=True,
-        )
+
 
         if st.button("Retrain Forecast Model", use_container_width=True, type="primary"):
             with st.spinner("Retraining Prophet model…"):
@@ -147,22 +143,18 @@ def render() -> None:
             else:
                 st.error("Chain INVALID — tampering detected.")
 
-        st.markdown("</div>", unsafe_allow_html=True)
+
 
     with right:
         st.subheader("System Status")
         blocks = load_ledger()
         chain_ok = verify_chain(blocks) if blocks else True
 
-        st.markdown(
-            '<div style="background:#FFFFFF;border:1px solid #C8E6C9;'
-            'border-radius:8px;padding:16px 20px;">',
-            unsafe_allow_html=True,
-        )
+
         _status_row("Forecast Model",  "Trained" if model_trained else "Not trained", model_trained)
         _status_row("Forecast MAPE",   _mape(), True)
         _status_row("Anomaly Model",   "Trained" if anomaly_trained else "Not trained", anomaly_trained)
         _status_row("Data Pipeline",   _data_pipeline_status(), True)
         _status_row("Blockchain",      f"{len(blocks)} blocks · {'VALID' if chain_ok else 'INVALID'}", chain_ok)
         _status_row("Last Updated",    datetime.now().strftime("%Y-%m-%d"), True)
-        st.markdown("</div>", unsafe_allow_html=True)
+

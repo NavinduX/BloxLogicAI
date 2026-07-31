@@ -37,11 +37,7 @@ def render() -> None:
     alerts = _load_alerts()
     model_trained = os.path.exists(ANOMALY_PATH)
 
-    st.markdown(
-        '<div style="background:#FFFFFF;border:1px solid #C8E6C9;'
-        'border-radius:8px;padding:20px;">',
-        unsafe_allow_html=True,
-    )
+
     st.subheader("Anomaly Detection — Isolation Forest")
     status_color = "#2E7D32" if model_trained else "#E65100"
     status_text  = "Trained" if model_trained else "Not trained"
@@ -58,7 +54,7 @@ def render() -> None:
     st.markdown("<br>", unsafe_allow_html=True)
     if st.button("Run Anomaly Detection", use_container_width=True, type="primary"):
         _run_anomaly()
-    st.markdown("</div>", unsafe_allow_html=True)
+
 
     if model_trained and alerts:
         st.subheader("Detected Anomalies")

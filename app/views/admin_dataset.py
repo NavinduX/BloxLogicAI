@@ -18,11 +18,6 @@ def render() -> None:
     st.caption("Upload new supply chain data and inspect processed datasets.")
 
     # ── Upload section ─────────────────────────────────────────────────────
-    st.markdown(
-        '<div style="background:#FFFFFF;border:1px solid #C8E6C9;'
-        'border-radius:8px;padding:20px;margin-bottom:16px;">',
-        unsafe_allow_html=True,
-    )
     st.subheader("Upload Dataset")
     uploaded = st.file_uploader(
         "Upload a new dataset (CSV or Excel)",
@@ -47,7 +42,6 @@ def render() -> None:
             st.dataframe(preview_df, use_container_width=True)
         except Exception as exc:
             st.error(f"Could not read file: {exc}")
-    st.markdown("</div>", unsafe_allow_html=True)
 
     # ── Current forecast dataset ───────────────────────────────────────────
     st.subheader("Current Forecast Dataset")

@@ -50,16 +50,9 @@ else:
     user = auth.current_user()
     role = user["role"]
 
-    # ── Sidebar: brand + identity + sign out ────────────────────────────────
+    # ── Sidebar: brand + identity ───────────────────────────────────────────
     st.sidebar.title("BloxLogicAI")
     st.sidebar.caption("Sri Lanka Tea Supply-Chain Intelligence")
-    st.sidebar.markdown(
-        f"**{user['username']}** &nbsp;·&nbsp; *{role}*",
-        unsafe_allow_html=True,
-    )
-    if st.sidebar.button("Sign out", use_container_width=True):
-        auth.logout_user()
-        st.rerun()
     st.sidebar.divider()
 
     # ── Navigation menu (role-based) ────────────────────────────────────────
@@ -72,6 +65,7 @@ else:
             "Blockchain Ledger",
             "User Management",
             "Analytics",
+            "Profile",
         ]
     else:
         NAV = [
@@ -79,9 +73,52 @@ else:
             "Forecasting",
             "Anomaly Detection",
             "Blockchain Traceability",
+            "Profile",
         ]
 
-    page = st.sidebar.radio("Menu", NAV, label_visibility="collapsed")
+    # Initialize or sanitize current page
+    if st.session_state.get("current_page") not in NAV:
+        st.session_state.current_page = NAV[0]
+
+    # Render sidebar buttons
+    for item in NAV:
+        is_active = st.session_state.current_page == item
+        if st.sidebar.button(
+            item,
+            type="primary" if is_active else "secondary",
+            use_container_width=True,
+            key=f"nav_{item}"
+        ):
+            st.session_state.current_page = item
+            st.rerun()
+
+    page = st.session_state.current_page
+
+    # ── Sidebar Bottom: user info & sign out ────────────────────────────────
+    st.sidebar.markdown(
+        """
+        <style>
+            [data-testid="stSidebarUserContent"] {
+                display: flex;
+                flex-direction: column;
+                flex-grow: 1;
+            }
+            [data-testid="stSidebarUserContent"] > div:has(.sidebar-spacer) {
+                flex-grow: 1;
+            }
+        </style>
+        <div class="sidebar-spacer"></div>
+        """,
+        unsafe_allow_html=True,
+    )
+    st.sidebar.divider()
+    st.sidebar.markdown(
+        f"<div style='text-align: center; margin-bottom: 10px; font-weight: 600; font-size: 16px;'>{user['username']}</div>",
+        unsafe_allow_html=True,
+    )
+    if st.sidebar.button("Sign out", use_container_width=True, key="sign_out_btn"):
+        auth.logout_user()
+        st.rerun()
 
     # ── Page dispatch (lazy imports keep Prophet off the public-page path) ──
     if role == "admin":
@@ -99,6 +136,8 @@ else:
             from app.views import admin_users; admin_users.render()
         elif page == "Analytics":
             from app.views import analytics; analytics.render()
+        elif page == "Profile":
+            from app.views import user_profile; user_profile.render()
     else:
         if page == "Dashboard":
             from app.views import user_dashboard; user_dashboard.render()
@@ -108,3 +147,5 @@ else:
             from app.views import anomaly; anomaly.render()
         elif page == "Blockchain Traceability":
             from app.views import blockchain_trace; blockchain_trace.render()
+        elif page == "Profile":
+            from app.views import user_profile; user_profile.render()
