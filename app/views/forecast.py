@@ -15,6 +15,7 @@ import plotly.graph_objects as go
 import streamlit as st
 from prophet import Prophet
 
+from app.style import panel
 from models import forecasting as fc
 from utils import data_loader
 
@@ -103,12 +104,27 @@ def retrain(df: pd.DataFrame, model_type: str = "univariate") -> dict:
 # ---------------------------------------------------------------------------
 def render() -> None:
     """Render the tea export forecast dashboard."""
-    st.sidebar.header("Forecast settings")
-    model_type = st.sidebar.radio("Model Type", ["univariate", "multivariate"], 
-                                  format_func=lambda x: x.capitalize())
-    horizon = st.sidebar.slider("Forecast horizon (months)", 3, 24, 12)
-    show_band = st.sidebar.checkbox("Show confidence interval", value=True)
-    show_imputed = st.sidebar.checkbox("Mark interpolated months", value=True)
+    st.title("Tea Export Volume Forecast")
+    caption_placeholder = st.empty()
+    
+    # -----------------------------------------------------------------------
+    # Forecast Settings (Moved from sidebar)
+    # -----------------------------------------------------------------------
+    st.markdown("<div style='margin-top: 30px;'></div>", unsafe_allow_html=True)
+    panel("Forecast Settings")
+    st.markdown("<div style='margin-bottom: 10px;'></div>", unsafe_allow_html=True)
+
+    c1, c2, c3, c4 = st.columns(4)
+    model_type = c1.selectbox("Model Type", ["univariate", "multivariate"], format_func=lambda x: x.capitalize())
+    horizon = c2.slider("Forecast horizon (months)", 3, 24, 12)
+    with c3:
+        st.markdown("<div style='margin-top: 32px;'></div>", unsafe_allow_html=True)
+        show_band = st.checkbox("Show confidence interval", value=True)
+    with c4:
+        st.markdown("<div style='margin-top: 32px;'></div>", unsafe_allow_html=True)
+        show_imputed = st.checkbox("Mark interpolated months", value=True)
+
+    st.markdown("<hr style='border: none; border-bottom: 2px solid #C8E6C9; margin-top: 10px; margin-bottom: 20px;'>", unsafe_allow_html=True)
 
     try:
         df = get_data(model_type)
@@ -118,12 +134,12 @@ def render() -> None:
         st.info("ℹ️ Forecast models and datasets are currently unavailable. Please log in as an administrator to generate datasets and train the AI models.")
         return
 
+    caption_placeholder.caption(f"Monthly Sri Lanka tea export volume (MT) — Prophet, {model_type} "
+                                f"({df.ds.min():%b %Y} → {df.ds.max():%b %Y}, {len(df)} months).")
+    
     # -----------------------------------------------------------------------
-    # Header + KPIs
+    # KPIs
     # -----------------------------------------------------------------------
-    st.title("Tea Export Volume Forecast")
-    st.caption(f"Monthly Sri Lanka tea export volume (MT) — Prophet, {model_type} "
-               f"({df.ds.min():%b %Y} → {df.ds.max():%b %Y}, {len(df)} months).")
     future = forecast[forecast["ds"] > df["ds"].max()]
 
     latest = df.iloc[-1]

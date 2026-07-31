@@ -51,27 +51,24 @@ def render() -> None:
     )
 
     # ── Search ───────────────────────────────────────────────────────────────
-    row_form, row_scan = st.columns([5, 1])
-    with row_form:
-        with st.form("batch_search"):
-            col_input, col_btn = st.columns([4, 1])
-            with col_input:
-                batch_id_typed = st.text_input(
-                    "Batch ID",
-                    placeholder="e.g. TEA001",
-                    label_visibility="collapsed",
-                )
-            with col_btn:
-                search = st.form_submit_button("Search", use_container_width=True)
-    with row_scan:
-        st.markdown("<div style='height:28px'></div>", unsafe_allow_html=True)
-        if st.button("📷", help="Scan a batch's QR code with your camera", use_container_width=True):
-            opening = not st.session_state.get("show_scanner", False)
-            st.session_state["show_scanner"] = opening
-            if opening:
-                st.session_state["qr_scan_session"] = st.session_state.get("qr_scan_session", 0) + 1
+    with st.form("batch_search"):
+        col_input, col_btn, col_scan = st.columns([4, 1, 1])
+        with col_input:
+            batch_id_typed = st.text_input(
+                "Batch ID",
+                placeholder="e.g. TEA001",
+                label_visibility="collapsed",
+            )
+        with col_btn:
+            search = st.form_submit_button("Search", use_container_width=True)
+        with col_scan:
+            scan = st.form_submit_button("📷", help="Scan a batch's QR code with your camera", use_container_width=True)
 
-    st.caption("Available demo batches: **TEA001** (exported to UK) · **TEA002** (awaiting export) · **TEA003** (exported to UAE)")
+    if scan:
+        opening = not st.session_state.get("show_scanner", False)
+        st.session_state["show_scanner"] = opening
+        if opening:
+            st.session_state["qr_scan_session"] = st.session_state.get("qr_scan_session", 0) + 1
 
     if st.session_state.get("show_scanner"):
         _render_qr_scanner()
