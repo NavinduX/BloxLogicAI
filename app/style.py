@@ -16,6 +16,142 @@ import streamlit as st
 # ---------------------------------------------------------------------------
 _CSS = """
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+/* ── Typography & Global Theme ────────────────────────────────────────── */
+.block-container {
+    padding-top: 1.5rem !important;
+}
+
+html, body, [class*="css"] {
+    font-family: 'Inter', sans-serif;
+}
+
+h1, .stHeadingContainer h1 {
+    font-family: 'Space Grotesk', sans-serif !important;
+    font-weight: 700 !important;
+}
+
+h2, h3, .stHeadingContainer h2, .stHeadingContainer h3 {
+    font-family: 'Space Grotesk', sans-serif !important;
+    font-weight: 600 !important;
+}
+
+h4, h5, h6, .stHeadingContainer h4, .stHeadingContainer h5, .stHeadingContainer h6 {
+    font-family: 'Space Grotesk', sans-serif !important;
+    font-weight: 500 !important;
+}
+
+p, span, div {
+    font-family: 'Inter', sans-serif;
+}
+
+label, .stButton button, th, .stMetricValue, .stMetricDelta {
+    font-weight: 500 !important;
+}
+
+/* ── Custom Landing Page Components ───────────────────────────────────── */
+.feature-card {
+    background: #FFFFFF;
+    border: 1px solid #E8F5E9;
+    border-left: 5px solid #2E7D32;
+    border-radius: 12px;
+    padding: 24px;
+    height: 100%;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.06);
+    border-color: #81C784;
+    border-left-color: #1B5E20;
+}
+.feature-card-icon {
+    font-size: 32px;
+    color: #2E7D32;
+    margin-bottom: 16px;
+}
+.feature-card-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 20px;
+    color: #1A1A1A;
+    margin-bottom: 12px;
+}
+.feature-card-text {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 15px;
+    color: #555555;
+    line-height: 1.5;
+}
+
+.hero-container {
+    position: relative;
+    width: 100%;
+    border-radius: 16px;
+    overflow: hidden;
+    min-height: 640px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 60px 20px;
+    margin-bottom: 30px;
+    background-size: cover;
+    background-position: center;
+}
+.hero-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.7));
+    z-index: 1;
+}
+.hero-content {
+    position: relative;
+    z-index: 2;
+    color: #FFFFFF;
+    max-width: 800px;
+    padding: 20px;
+}
+.hero-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 3.2rem;
+    margin-bottom: 16px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    line-height: 1.1;
+    color: #ffffff;
+}
+.hero-subtitle {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 1.25rem;
+    margin-bottom: 32px;
+    color: #E8F5E9;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+}
+
+.footer-container {
+    text-align: center;
+    padding: 40px 20px 20px;
+    margin-top: 40px;
+    border-top: 1px solid #E8F5E9;
+}
+.footer-text {
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 8px;
+}
+.footer-links {
+    font-size: 14px;
+    color: #2E7D32;
+    text-decoration: none;
+    margin: 0 10px;
+}
+
 /* ── Severity badges ──────────────────────────────────────────────────── */
 .badge-high {
     background: #FFEBEE; color: #C62828;

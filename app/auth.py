@@ -170,6 +170,26 @@ def update_password(username: str, new_password: str,
     return True, f"Password for '{username}' updated."
 
 
+def update_user_email(username: str, email: str,
+                      path: str = USERS_CSV) -> tuple[bool, str]:
+    """Update the email for an existing user inside the lock."""
+    email = (email or "").strip()
+    if not email:
+        return False, "Email cannot be empty."
+    with _users_lock:
+        df = load_users(path)
+        mask = df["username"].str.lower() == username.lower()
+        if not mask.any():
+            return False, f"User '{username}' not found."
+            
+        if (df[~mask]["email"].str.lower() == email.lower()).any():
+            return False, "That email is already in use by another account."
+            
+        df.loc[mask, "email"] = email
+        _save_users(df, path)
+    return True, f"Email for '{username}' updated."
+
+
 def authenticate(username: str, password: str,
                  path: str = USERS_CSV) -> dict | None:
     """Return the user record (without password) on success, else ``None``."""
