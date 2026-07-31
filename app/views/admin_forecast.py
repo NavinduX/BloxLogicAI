@@ -27,11 +27,7 @@ def render() -> None:
     metrics = _load_metrics()
     model_trained = os.path.exists(MODEL_PATH)
 
-    st.markdown(
-        '<div style="background:#FFFFFF;border:1px solid #C8E6C9;'
-        'border-radius:8px;padding:20px;">',
-        unsafe_allow_html=True,
-    )
+
     st.subheader("Demand Forecasting — Prophet")
     status_color = "#2E7D32" if model_trained else "#C62828"
     status_text  = "Trained" if model_trained else "Not trained"
@@ -63,7 +59,7 @@ def render() -> None:
     with bcol2:
         if st.button("Retrain Model", use_container_width=True, type="primary"):
             _run_training()
-    st.markdown("</div>", unsafe_allow_html=True)
+
 
     # ── Action log ────────────────────────────────────────────────────────
     st.divider()
