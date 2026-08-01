@@ -50,12 +50,17 @@ def run_anomaly_detection(contamination: float = 0.10, random_state: int = 42) -
         if row["export_mt"] < df["export_mt"].quantile(0.10):
             severity = "HIGH"
             alert_type = "Severe Export Drop"
+            action = "Investigate production constraints immediately. Consider securing alternative supply sources or adjusting shipping schedules to mitigate shortfall."
         elif row.get("fuel_lad", 0) > df.get("fuel_lad", pd.Series([0])).quantile(0.90):
             severity = "HIGH"
             alert_type = "Fuel Price Spike"
+            action = "Review logistics costs. Consider renegotiating freight contracts or optimizing transport routes to absorb fuel price increases."
         elif row.get("crude_oil_price", 0) > df.get("crude_oil_price", pd.Series([0])).quantile(0.90):
             severity = "MEDIUM"
             alert_type = "Crude Oil Spike"
+            action = "Monitor international freight rates closely. Hedge currency exposure if necessary and prepare for potential downstream cost increases."
+        else:
+            action = "Review general market conditions, assess overall supply chain health, and monitor for compounding effects."
             
         desc = (f"Anomaly detected in {month_str}. "
                 f"Export: {row['export_mt']:.0f} MT, "
@@ -63,8 +68,6 @@ def run_anomaly_detection(contamination: float = 0.10, random_state: int = 42) -
                 f"USD/LKR: {row['usd_lkr_avg']:.2f}, "
                 f"Crude Oil: ${row.get('crude_oil_price', 0):.2f}, "
                 f"Fuel (LAD): Rs.{row.get('fuel_lad', 0):.2f}.")
-                
-        action = "Review market conditions, check fuel availability, and adjust short-term export targets."
         
         alerts.append({
             "severity": severity,

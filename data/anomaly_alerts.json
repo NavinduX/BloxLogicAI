@@ -4,118 +4,118 @@
     "type": "Severe Export Drop",
     "date": "2026-04",
     "description": "Anomaly detected in 2026-04. Export: 16609 MT, Production: 24221 MT, USD/LKR: 313.25, Crude Oil: $108.64, Fuel (LAD): Rs.382.00.",
-    "action": "Review market conditions, check fuel availability, and adjust short-term export targets."
+    "action": "Investigate production constraints immediately. Consider securing alternative supply sources or adjusting shipping schedules to mitigate shortfall."
   },
   {
     "severity": "HIGH",
     "type": "Severe Export Drop",
     "date": "2026-03",
     "description": "Anomaly detected in 2026-03. Export: 18148 MT, Production: 20897 MT, USD/LKR: 308.76, Crude Oil: $102.86, Fuel (LAD): Rs.322.10.",
-    "action": "Review market conditions, check fuel availability, and adjust short-term export targets."
+    "action": "Investigate production constraints immediately. Consider securing alternative supply sources or adjusting shipping schedules to mitigate shortfall."
   },
   {
     "severity": "HIGH",
     "type": "Severe Export Drop",
     "date": "2025-11",
     "description": "Anomaly detected in 2025-11. Export: 17722 MT, Production: 21450 MT, USD/LKR: 303.07, Crude Oil: $58.58, Fuel (LAD): Rs.277.00.",
-    "action": "Review market conditions, check fuel availability, and adjust short-term export targets."
+    "action": "Investigate production constraints immediately. Consider securing alternative supply sources or adjusting shipping schedules to mitigate shortfall."
   },
   {
     "severity": "HIGH",
     "type": "Severe Export Drop",
     "date": "2024-04",
     "description": "Anomaly detected in 2024-04. Export: 15528 MT, Production: 21465 MT, USD/LKR: 295.91, Crude Oil: $83.49, Fuel (LAD): Rs.363.00.",
-    "action": "Review market conditions, check fuel availability, and adjust short-term export targets."
+    "action": "Investigate production constraints immediately. Consider securing alternative supply sources or adjusting shipping schedules to mitigate shortfall."
   },
   {
     "severity": "MEDIUM",
     "type": "Supply Chain Disruption",
     "date": "2023-05",
     "description": "Anomaly detected in 2023-05. Export: 19276 MT, Production: 26524 MT, USD/LKR: 307.10, Crude Oil: $68.11, Fuel (LAD): Rs.310.00.",
-    "action": "Review market conditions, check fuel availability, and adjust short-term export targets."
+    "action": "Review general market conditions, assess overall supply chain health, and monitor for compounding effects."
   },
   {
     "severity": "HIGH",
     "type": "Severe Export Drop",
     "date": "2023-03",
     "description": "Anomaly detected in 2023-03. Export: 17383 MT, Production: 21336 MT, USD/LKR: 329.98, Crude Oil: $75.68, Fuel (LAD): Rs.399.84.",
-    "action": "Review market conditions, check fuel availability, and adjust short-term export targets."
+    "action": "Investigate production constraints immediately. Consider securing alternative supply sources or adjusting shipping schedules to mitigate shortfall."
   },
   {
     "severity": "HIGH",
     "type": "Severe Export Drop",
     "date": "2023-01",
     "description": "Anomaly detected in 2023-01. Export: 16781 MT, Production: 19138 MT, USD/LKR: 362.61, Crude Oil: $78.95, Fuel (LAD): Rs.405.97.",
-    "action": "Review market conditions, check fuel availability, and adjust short-term export targets."
+    "action": "Investigate production constraints immediately. Consider securing alternative supply sources or adjusting shipping schedules to mitigate shortfall."
   },
   {
     "severity": "HIGH",
     "type": "Fuel Price Spike",
     "date": "2022-12",
     "description": "Anomaly detected in 2022-12. Export: 18648 MT, Production: 19501 MT, USD/LKR: 363.52, Crude Oil: $80.16, Fuel (LAD): Rs.421.61.",
-    "action": "Review market conditions, check fuel availability, and adjust short-term export targets."
+    "action": "Review logistics costs. Consider renegotiating freight contracts or optimizing transport routes to absorb fuel price increases."
   },
   {
     "severity": "HIGH",
     "type": "Severe Export Drop",
     "date": "2022-11",
     "description": "Anomaly detected in 2022-11. Export: 18542 MT, Production: 20245 MT, USD/LKR: 363.50, Crude Oil: $80.48, Fuel (LAD): Rs.424.50.",
-    "action": "Review market conditions, check fuel availability, and adjust short-term export targets."
+    "action": "Investigate production constraints immediately. Consider securing alternative supply sources or adjusting shipping schedules to mitigate shortfall."
   },
   {
     "severity": "HIGH",
     "type": "Fuel Price Spike",
     "date": "2022-09",
     "description": "Anomaly detected in 2022-09. Export: 20784 MT, Production: 39715 MT, USD/LKR: 358.13, Crude Oil: $79.91, Fuel (LAD): Rs.430.00.",
-    "action": "Review market conditions, check fuel availability, and adjust short-term export targets."
+    "action": "Review logistics costs. Consider renegotiating freight contracts or optimizing transport routes to absorb fuel price increases."
   },
   {
     "severity": "HIGH",
     "type": "Fuel Price Spike",
     "date": "2022-08",
     "description": "Anomaly detected in 2022-08. Export: 22215 MT, Production: 18277 MT, USD/LKR: 357.84, Crude Oil: $90.09, Fuel (LAD): Rs.430.00.",
-    "action": "Review market conditions, check fuel availability, and adjust short-term export targets."
+    "action": "Review logistics costs. Consider renegotiating freight contracts or optimizing transport routes to absorb fuel price increases."
   },
   {
     "severity": "HIGH",
     "type": "Fuel Price Spike",
     "date": "2022-07",
     "description": "Anomaly detected in 2022-07. Export: 22070 MT, Production: 19861 MT, USD/LKR: 356.75, Crude Oil: $101.31, Fuel (LAD): Rs.450.32.",
-    "action": "Review market conditions, check fuel availability, and adjust short-term export targets."
+    "action": "Review logistics costs. Consider renegotiating freight contracts or optimizing transport routes to absorb fuel price increases."
   },
   {
     "severity": "HIGH",
     "type": "Fuel Price Spike",
     "date": "2022-06",
     "description": "Anomaly detected in 2022-06. Export: 22713 MT, Production: 20149 MT, USD/LKR: 356.43, Crude Oil: $107.76, Fuel (LAD): Rs.410.00.",
-    "action": "Review market conditions, check fuel availability, and adjust short-term export targets."
+    "action": "Review logistics costs. Consider renegotiating freight contracts or optimizing transport routes to absorb fuel price increases."
   },
   {
     "severity": "MEDIUM",
     "type": "Crude Oil Spike",
     "date": "2022-05",
     "description": "Anomaly detected in 2022-05. Export: 19028 MT, Production: 26039 MT, USD/LKR: 355.89, Crude Oil: $114.38, Fuel (LAD): Rs.317.65.",
-    "action": "Review market conditions, check fuel availability, and adjust short-term export targets."
+    "action": "Monitor international freight rates closely. Hedge currency exposure if necessary and prepare for potential downstream cost increases."
   },
   {
     "severity": "MEDIUM",
     "type": "Crude Oil Spike",
     "date": "2022-03",
     "description": "Anomaly detected in 2022-03. Export: 22352 MT, Production: 44925 MT, USD/LKR: 248.81, Crude Oil: $100.53, Fuel (LAD): Rs.158.26.",
-    "action": "Review market conditions, check fuel availability, and adjust short-term export targets."
+    "action": "Monitor international freight rates closely. Hedge currency exposure if necessary and prepare for potential downstream cost increases."
   },
   {
     "severity": "HIGH",
     "type": "Severe Export Drop",
     "date": "2020-04",
     "description": "Anomaly detected in 2020-04. Export: 17723 MT, Production: 20823 MT, USD/LKR: 188.44, Crude Oil: $19.23, Fuel (LAD): Rs.104.00.",
-    "action": "Review market conditions, check fuel availability, and adjust short-term export targets."
+    "action": "Investigate production constraints immediately. Consider securing alternative supply sources or adjusting shipping schedules to mitigate shortfall."
   },
   {
     "severity": "HIGH",
     "type": "Severe Export Drop",
     "date": "2020-03",
     "description": "Anomaly detected in 2020-03. Export: 13259 MT, Production: 13526 MT, USD/LKR: 181.22, Crude Oil: $20.51, Fuel (LAD): Rs.104.00.",
-    "action": "Review market conditions, check fuel availability, and adjust short-term export targets."
+    "action": "Investigate production constraints immediately. Consider securing alternative supply sources or adjusting shipping schedules to mitigate shortfall."
   }
 ]

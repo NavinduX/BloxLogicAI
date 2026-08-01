@@ -55,10 +55,3 @@ desktop.ini
 .pytest_cache/
 .coverage
 htmlcov/
-
-# AI dev tools
-.serena/
-
-# Personal planning / notes
-daily-plans/
-pre-implementation-plan.md
