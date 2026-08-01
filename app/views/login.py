@@ -10,8 +10,17 @@ from app import auth
 
 
 def render() -> None:
+    # Add horizontal padding to the right column to "middle" the form
+    st.markdown("""
+        <style>
+            [data-testid="column"]:nth-of-type(2) {
+                padding-left: 5% !important;
+                padding-right: 5% !important;
+            }
+        </style>
+    """, unsafe_allow_html=True)
+
     # Use 2 columns to split the page: half for the image, half for the form.
-    # Vertically center the contents.
     col1, col2 = st.columns([1, 1], gap="large", vertical_alignment="center")
     
     with col1:
@@ -20,7 +29,7 @@ def render() -> None:
             with open(image_path, "rb") as f:
                 encoded = base64.b64encode(f.read()).decode()
             st.markdown(
-                f'<img src="data:image/jpeg;base64,{encoded}" style="max-height: 65vh; width: 100%; object-fit: cover; border-radius: 16px;">',
+                f'<img src="data:image/jpeg;base64,{encoded}" style="max-height: 90vh; width: 100%; object-fit: cover; border-radius: 16px;">',
                 unsafe_allow_html=True
             )
         else:
@@ -33,7 +42,7 @@ def render() -> None:
             username = st.text_input("Username")
             password = st.text_input("Password", type="password")
             submitted = st.form_submit_button("Login", type="primary",
-                                              use_container_width=True)
+                                              width='stretch')
 
         if submitted:
             record = auth.authenticate(username, password)
@@ -46,10 +55,10 @@ def render() -> None:
         st.divider()
         c1, c2 = st.columns(2)
         with c1:
-            if st.button(":material/arrow_back: Back to home", use_container_width=True):
+            if st.button(":material/arrow_back: Back to home", width='stretch'):
                 auth.goto("landing")
                 st.rerun()
         with c2:
-            if st.button("Create an account", use_container_width=True):
+            if st.button("Create an account", width='stretch'):
                 auth.goto("register")
                 st.rerun()
