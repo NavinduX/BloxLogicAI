@@ -10,6 +10,7 @@
 
 ## Table of Contents
 - [Overview](#overview)
+- [Screenshots](#screenshots)
 - [Key Features](#key-features)
 - [Tech Stack](#tech-stack)
 - [Project Structure](#project-structure)
@@ -19,6 +20,8 @@
 - [Usage](#usage)
 - [Testing](#testing)
 - [Data Sources](#data-sources)
+- [Contributing](#contributing)
+- [Contact](#contact)
 - [License](#license)
 
 ---
@@ -26,6 +29,20 @@
 ## Overview
 
 **BloxLogicAI** is a lightweight, Python-based web application designed to bring advanced intelligence and transparency to Sri Lanka's tea supply chain. By integrating Machine Learning and Blockchain technology, the platform empowers stakeholders—from tea estate managers to government administrators—to make data-driven decisions, mitigate risks, and guarantee product authenticity.
+
+---
+
+## Screenshots
+
+| Landing Page | User Dashboard |
+|:---:|:---:|
+| ![Landing Page](docs/images/landing_page.png) | ![User Dashboard](docs/images/dashboard_user_page.png) |
+| **Forecasting (User Page)** | **Anomaly Detection (User Page)** |
+| ![Forecasting](docs/images/forecast_user_page.png) | ![Anomaly Detection](docs/images/anomaly_detection_user_page.png) |
+| **Blockchain (User Page)** | **Dataset Management (Admin)** |
+| ![Blockchain User](docs/images/blockchain_user_page.png) | ![Dataset Management](docs/images/dataset_management_admin.png) |
+| **Blockchain Ledger (Admin)** | |
+| ![Blockchain Ledger](docs/images/blockchain_ledger_admin.png) | |
 
 ---
 
@@ -137,6 +154,22 @@ The machine learning models are trained and validated using real-world data aggr
 - **Tea Exporters Association:** Market and export reports
 - **Sri Lanka Meteorological Department:** Historical climate and weather data
 - **Central Bank of Sri Lanka:** Macro-economic indicators (Exchange rates, inflation, etc.)
+
+---
+
+## Contributing
+
+We welcome contributions to BloxLogicAI! If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
+
+For full guidelines on how to contribute, please read our [CONTRIBUTING.md](CONTRIBUTING.md).
+
+---
+
+## Contact
+
+**Name** - [GitHub Profile](https://github.com/nalantishantha) - [EMAIL_ADDRESS]
+
+Project Link: [https://github.com/nalantishantha/BloxLogicAI](https://github.com/nalantishantha/BloxLogicAI)
 
 ---
 

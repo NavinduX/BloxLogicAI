@@ -30,12 +30,6 @@ data/users.csv
 # Blockchain ledger (runtime file)
 blockchain/ledger.json
 
-# QR code output
-*.png
-docs/*.png
-!docs/architecture_diagram.png
-!docs/blockchain_flow.png
-
 # Environment
 .env
 *.env
