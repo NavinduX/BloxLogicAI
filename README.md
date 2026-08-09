@@ -169,7 +169,7 @@ For full guidelines on how to contribute, please read our [CONTRIBUTING.md](CONT
 
 **Name** - [GitHub Profile](https://github.com/nalantishantha) - [EMAIL_ADDRESS]
 
-Project Link: [https://github.com/nalantishantha/BloxLogicAI](https://github.com/nalantishantha/BloxLogicAI)
+Project Link: https://github.com/NavinduX/BloxLogicAI
 
 ---
 
