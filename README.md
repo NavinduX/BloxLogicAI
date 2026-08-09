@@ -167,7 +167,7 @@ For full guidelines on how to contribute, please read our [CONTRIBUTING.md](CONT
 
 ## Contact
 
-**Name** - [GitHub Profile]https://github.com/NavinduX - [EMAIL_ADDRESS]
+**Name** - [https://github.com/NavinduX}
 
 Project Link: https://github.com/NavinduX/BloxLogicAI
 
