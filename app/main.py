@@ -76,7 +76,8 @@ else:
             "Profile",
         ]
 
-    # Initialize or sanitize current page
+
+    # Initialize or sanitize current page.
     if st.session_state.get("current_page") not in NAV:
         st.session_state.current_page = NAV[0]
 
@@ -149,3 +150,4 @@ else:
             from app.views import blockchain_trace; blockchain_trace.render()
         elif page == "Profile":
             from app.views import user_profile; user_profile.render()
+
