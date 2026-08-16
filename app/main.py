@@ -10,6 +10,7 @@ Authenticated users are routed by role:
              Blockchain Ledger, User Management, Analytics
 """
 
+
 from __future__ import annotations 
 
 import os
@@ -38,7 +39,7 @@ PUBLIC_PAGES = {"landing": landing, "login": login, "register": register}
 
 
 # ---------------------------------------------------------------------------
-# Router
+# Router 
 # ---------------------------------------------------------------------------
 if not auth.is_authenticated():
     page = st.session_state.page
@@ -50,12 +51,12 @@ else:
     user = auth.current_user()
     role = user["role"]
 
-    # ── Sidebar: brand + identity ───────────────────────────────────────────
+    # ── Sidebar: brand + identity ─────────────────────────────────────────── 
     st.sidebar.title("BloxLogicAI")
     st.sidebar.caption("Sri Lanka Tea Supply-Chain Intelligence")
     st.sidebar.divider()
 
-    # ── Navigation menu (role-based) ────────────────────────────────────────
+    # ── Navigation menu (role-based) ──────────────────────────────────────── 
     if role == "admin":
         NAV = [
             "Dashboard",
@@ -77,11 +78,11 @@ else:
         ]
 
 
-    # Initialize or sanitize current page.
+    # Initialize or sanitize current page. 
     if st.session_state.get("current_page") not in NAV:
         st.session_state.current_page = NAV[0]
 
-    # Render sidebar buttons
+    # Render sidebar buttons 
     for item in NAV:
         is_active = st.session_state.current_page == item
         if st.sidebar.button(
@@ -95,7 +96,7 @@ else:
 
     page = st.session_state.current_page
 
-    # ── Sidebar Bottom: user info & sign out ────────────────────────────────
+    # ── Sidebar Bottom: user info & sign out ──────────────────────────────── 
     st.sidebar.markdown(
         """
         <style>
@@ -121,7 +122,7 @@ else:
         auth.logout_user()
         st.rerun()
 
-    # ── Page dispatch (lazy imports keep Prophet off the public-page path) ──
+    # ── Page dispatch (lazy imports keep Prophet off the public-page path) ── 
     if role == "admin":
         if page == "Dashboard":
             from app.views import admin_dashboard; admin_dashboard.render()

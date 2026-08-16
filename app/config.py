@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import os 
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # BloxLogicAI/
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # BloxLogicAI/ 
 
 DATA_DIR      = os.path.join(ROOT, "data")
 PROCESSED_DIR = os.path.join(DATA_DIR, "processed")
