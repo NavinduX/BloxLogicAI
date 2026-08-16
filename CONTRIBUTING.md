@@ -22,7 +22,7 @@ If you have a great idea for a new feature or an improvement to our AI models, s
 
 1. Clone the repository: 
    ```bash
-   git clone https://github.com/NavinduX/BloxLogicAI.git
+   git clone https://github.com/NavinduX/BloxLogicAI
    ```
 2. Create a virtual environment: 
    ```bash
