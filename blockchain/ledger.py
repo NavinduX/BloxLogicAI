@@ -14,7 +14,7 @@ list containing all batches' blocks, in insertion order.
     .venv/Scripts/python.exe blockchain/ledger.py --tamper    # non-destructive tamper demo
 """
 
-from __future__ import annotations
+from __future__ import annotations 
 
 import argparse
 import copy
@@ -48,7 +48,7 @@ class InvalidStageError(ValueError):
     """Raised by add_block() when a stage violates STAGE_ORDER for its batch."""
 
 
-# --- hashing -----------------------------------------------------------------
+# --- hashing ----------------------------------------------------------------- 
 
 def _hash_block(batch_id: str, seq: int, stage: str, location: str, details: str,
                 timestamp: str, previous_hash: str) -> str:
@@ -56,7 +56,7 @@ def _hash_block(batch_id: str, seq: int, stage: str, location: str, details: str
     return hashlib.sha256(content.encode("utf-8")).hexdigest()
 
 
-# --- persistence ---------------------------------------------------------------
+# --- persistence --------------------------------------------------------------- 
 
 def load_ledger() -> list[Block]:
     """Load all blocks from the JSON ledger. Returns empty list if not found."""
@@ -73,7 +73,7 @@ def save_ledger(blocks: list[Block]) -> None:
         json.dump(blocks, fh, indent=2)
 
 
-# --- queries ---------------------------------------------------------------------
+# --- queries --------------------------------------------------------------------- 
 
 def get_batch(batch_id: str) -> list[Block]:
     """Return all blocks for a given batch ID (case-insensitive), in seq order."""
@@ -93,7 +93,7 @@ def next_stage(batch_id: str, blocks: list[Block] | None = None) -> str | None:
     return STAGE_ORDER[idx + 1]
 
 
-# --- mutation ------------------------------------------------------------------
+# --- mutation ------------------------------------------------------------------ 
 
 def add_block(batch_id: str, stage: str, location: str,
               details: str, timestamp: str | None = None) -> Block:
@@ -132,7 +132,7 @@ def add_block(batch_id: str, stage: str, location: str,
     return block
 
 
-# --- verification --------------------------------------------------------------
+# --- verification ---------------------------------------------------------------
 
 def verify_chain(blocks: list[Block]) -> bool:
     """Return True iff every batch's hash sub-chain is internally consistent.
@@ -159,7 +159,7 @@ def verify_chain(blocks: list[Block]) -> bool:
 
 
 # ---------------------------------------------------------------------------
-# Seed script / tamper demo — run as a script
+# Seed script / tamper demo — run as a script 
 # ---------------------------------------------------------------------------
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Seed or inspect the blockchain ledger.")
@@ -216,3 +216,5 @@ if __name__ == "__main__":
         print(f"Chain valid  : {valid}")
         if not valid:
             print("ERROR: chain verification failed — check seed data.")
+
+

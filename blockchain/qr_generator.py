@@ -16,6 +16,7 @@ keeps every scanner -- ours and third-party phone apps -- reading the exact
 text that was encoded.
 """
 
+
 from __future__ import annotations
 
 import io
@@ -68,7 +69,7 @@ def generate_qr_png_bytes(data: str, box_size: int = 12, border: int = 2) -> byt
     """Render `data` as a QR code and return raw PNG bytes."""
     img = qrcode.make(data, box_size=box_size, border=border)
     buf = io.BytesIO()
-    img.save(buf, format="PNG")
+    img.save(buf)
     return buf.getvalue()
 
 
