@@ -40,4 +40,4 @@ If you have a great idea for a new feature or an improvement to our AI models, s
 4. Run the app: 
    ```bash
    streamlit run app/main.py
-   ```
+   ``` 
