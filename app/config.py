@@ -1,6 +1,6 @@
 """
-Centralized path constants — single source of truth for all file locations. 
-Import from here instead of computing ROOT in each module. 
+Centralized path constants — single source of truth for all file locations.
+Import from here instead of computing ROOT in each module.
 """
 
 from __future__ import annotations 
@@ -21,3 +21,4 @@ LEDGER_PATH   = os.path.join(DATA_DIR, "blockchain_ledger.json")
 USERS_CSV     = os.path.join(DATA_DIR, "users.csv")
 METRICS_PATH  = os.path.join(MODELS_DIR, "forecast_metrics.json")
 MODEL_PATH    = os.path.join(MODELS_DIR, "forecast_prophet.joblib")
+
