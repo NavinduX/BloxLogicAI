@@ -12,7 +12,7 @@ from __future__ import annotations
 import streamlit as st
 
 # ---------------------------------------------------------------------------
-# CSS — only elements that config.toml cannot handle 
+# CSS — only elements that config.toml cannot handle
 # ---------------------------------------------------------------------------
 _CSS = """
 <style>
@@ -208,7 +208,7 @@ def inject_theme() -> None:
 
 
 # ---------------------------------------------------------------------------
-# HTML component helpers 
+# HTML component helpers
 # ---------------------------------------------------------------------------
 
 def badge(severity: str) -> str:
@@ -294,4 +294,3 @@ def panel(title: str = "") -> None:
             f'{title}</div>',
             unsafe_allow_html=True,
         )
-
