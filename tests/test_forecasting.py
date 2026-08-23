@@ -1,4 +1,4 @@
-"""Tests for the Prophet forecasting module (models/forecasting.py)."""
+"""Tests for the Prophet forecasting module (models/forecasting.py).""" 
 
 import numpy as np
 import pandas as pd
@@ -40,7 +40,7 @@ def test_evaluate_returns_metrics(sample_df):
     for key in ("mae", "rmse", "mape", "test_periods"):
         assert key in m
     assert m["mae"] >= 0 and m["rmse"] >= 0
-    # synthetic series is smooth -> error should be modest 
+    # synthetic series is smooth -> error should be modest
     assert m["mape"] < 25
 
 
@@ -60,4 +60,3 @@ def test_load_forecast_data_real():
     assert len(df) > 100                     # long history
     assert df["y"].notna().all()
     assert df["ds"].is_monotonic_increasing
-
