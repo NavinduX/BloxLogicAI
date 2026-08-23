@@ -20,7 +20,7 @@ def run_anomaly_detection(contamination: float = 0.10, random_state: int = 42) -
         return 0
     df = pd.read_csv(ANOMALY_CSV)
     
-    # We parse the month string back to datetime to format it correctly later 
+    # We parse the month string back to datetime to format it correctly later
     df["month"] = pd.to_datetime(df["month"])
     
     if df.empty:
