@@ -119,4 +119,3 @@ def test_scan_round_trip_recovers_original_batch_id():
     scanned_batch_id = extract_batch_id(decoded_text)
 
     assert scanned_batch_id == original_batch_id
-
