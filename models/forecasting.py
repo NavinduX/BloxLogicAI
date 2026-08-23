@@ -36,7 +36,7 @@ import joblib
 from prophet import Prophet
 
 # ---------------------------------------------------------------------------
-# Paths & configuration
+# Paths & configuration 
 # ---------------------------------------------------------------------------
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROCESSED = os.path.join(ROOT, "data", "processed")
@@ -72,7 +72,7 @@ DEFAULT_PARAMS = dict(
 
 
 # ---------------------------------------------------------------------------
-# Shared preprocessing  (kept OUTSIDE the model runners — DRY)
+# Shared preprocessing  (kept OUTSIDE the model runners — DRY) 
 # ---------------------------------------------------------------------------
 def _prepare(df: pd.DataFrame, required: list[str]) -> pd.DataFrame:
     """Common cleaning both models need: parse ds, drop incomplete rows, sort.
@@ -102,7 +102,7 @@ def load_multivariate_data(path: str = MV_DATA,
 
 
 # ---------------------------------------------------------------------------
-# Train / predict primitives  (shared; regressors optional)
+# Train / predict primitives  (shared; regressors optional) 
 # ---------------------------------------------------------------------------
 def train_model(df: pd.DataFrame, regressors: tuple | list = (), **params) -> Prophet:
     """Fit Prophet on a (ds, y[, *regressors]) frame.
@@ -132,7 +132,7 @@ def predict(model: Prophet, periods: int = FORECAST_HORIZON,
 
 
 # ---------------------------------------------------------------------------
-# Future drivers for the multivariate model (cascade forecast + what-if)
+# Future drivers for the multivariate model (cascade forecast + what-if) 
 # ---------------------------------------------------------------------------
 def forecast_regressor(history: pd.DataFrame, col: str,
                        future_ds) -> np.ndarray:
@@ -187,7 +187,7 @@ def predict_multivariate(model: Prophet, history: pd.DataFrame,
 
 
 # ---------------------------------------------------------------------------
-# Evaluate (hold-out backtest; shared by both models)
+# Evaluate (hold-out backtest; shared by both models) 
 # ---------------------------------------------------------------------------
 def _score(actual: np.ndarray, pred: np.ndarray) -> dict:
     """MAE / RMSE / MAPE for an actual-vs-predicted pair."""
@@ -248,7 +248,7 @@ def evaluate(df: pd.DataFrame, test_periods: int = TEST_PERIODS,
 
 
 # ---------------------------------------------------------------------------
-# Persistence (shared)
+# Persistence (shared) 
 # ---------------------------------------------------------------------------
 def save_model(model: Prophet, path: str = MODEL_PATH) -> str:
     os.makedirs(os.path.dirname(path), exist_ok=True)

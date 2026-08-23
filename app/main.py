@@ -1,5 +1,5 @@
 """
-BloxLogicAI — Streamlit app entry point + router.
+BloxLogicAI — Streamlit app entry point + router. 
 
 Run from the project root:  streamlit run app/main.py
 
@@ -39,7 +39,7 @@ PUBLIC_PAGES = {"landing": landing, "login": login, "register": register}
 
 
 # ---------------------------------------------------------------------------
-# Router 
+# Router
 # ---------------------------------------------------------------------------
 if not auth.is_authenticated():
     page = st.session_state.page
@@ -151,4 +151,3 @@ else:
             from app.views import blockchain_trace; blockchain_trace.render()
         elif page == "Profile":
             from app.views import user_profile; user_profile.render()
-

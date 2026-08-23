@@ -45,7 +45,7 @@ def _seed(path: str) -> list[dict]:
 
 
 # ---------------------------------------------------------------------------
-# _hash_block
+# _hash_block 
 # ---------------------------------------------------------------------------
 
 def test_hash_block_deterministic():
@@ -72,7 +72,7 @@ def test_hash_block_sensitive_to_each_field():
 
 
 # ---------------------------------------------------------------------------
-# verify_chain
+# verify_chain 
 # ---------------------------------------------------------------------------
 
 def test_verify_chain_valid(tmp_ledger):
@@ -121,7 +121,7 @@ def test_verify_chain_per_batch_isolation(tmp_ledger):
 
 
 # ---------------------------------------------------------------------------
-# get_batch / next_stage
+# get_batch / next_stage 
 # ---------------------------------------------------------------------------
 
 def test_get_batch_filters_by_id(tmp_ledger):

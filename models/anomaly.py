@@ -20,7 +20,7 @@ def run_anomaly_detection(contamination: float = 0.10, random_state: int = 42) -
         return 0
     df = pd.read_csv(ANOMALY_CSV)
     
-    # We parse the month string back to datetime to format it correctly later
+    # We parse the month string back to datetime to format it correctly later 
     df["month"] = pd.to_datetime(df["month"])
     
     if df.empty:
@@ -30,10 +30,10 @@ def run_anomaly_detection(contamination: float = 0.10, random_state: int = 42) -
                     "rainfall_mm", "temp_mean", "crude_oil_price",
                     "brent_crude_price", "fuel_lp92", "fuel_lad", "kerosene_price"]
 
-    # Filter only available columns (just in case)
+    # Filter only available columns (just in case) 
     features = [c for c in feature_cols if c in df.columns]
     
-    # Isolation Forest
+    # Isolation Forest 
     model = IsolationForest(contamination=contamination, random_state=random_state)
     df["anomaly"] = model.fit_predict(df[features])
 

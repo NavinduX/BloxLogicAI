@@ -1,9 +1,9 @@
 """
-Centralized path constants — single source of truth for all file locations.
-Import from here instead of computing ROOT in each module.
+Centralized path constants — single source of truth for all file locations. 
+Import from here instead of computing ROOT in each module. 
 """
 
-from __future__ import annotations
+from __future__ import annotations 
 
 import os 
 

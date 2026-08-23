@@ -65,3 +65,4 @@ def test_load_users_seeds_admin(tmp_path):
     admin = auth.authenticate(auth.SEED_ADMIN_USERNAME,
                               auth.SEED_ADMIN_PASSWORD, path=path)
     assert admin is not None and admin["role"] == "admin"
+

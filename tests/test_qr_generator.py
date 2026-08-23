@@ -61,7 +61,7 @@ def test_format_batch_trace_includes_every_stage_detail():
 def test_format_batch_trace_ascii_sanitizes_non_ascii_characters():
     # Non-ASCII bytes (e.g. "°") round-trip incorrectly through some QR
     # encoder/decoder implementations (mis-detected as Kanji-mode segments),
-    # so the payload is transliterated to plain ASCII before encoding.
+    # so the payload is transliterated to plain ASCII before encoding. 
     text = format_batch_trace("TEA001", SAMPLE_BLOCKS)
     assert "°" not in text
     assert "90C" in text
@@ -119,3 +119,4 @@ def test_scan_round_trip_recovers_original_batch_id():
     scanned_batch_id = extract_batch_id(decoded_text)
 
     assert scanned_batch_id == original_batch_id
+

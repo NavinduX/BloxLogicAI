@@ -1,15 +1,15 @@
 """
-Authentication for the BloxLogicAI Streamlit app.
+Authentication for the BloxLogicAI Streamlit app. 
 
 Flat-file user store (CSV, no database) plus password hashing and the
-``st.session_state`` helpers the views use to drive the login/sign-out flow.
+``st.session_state`` helpers the views use to drive the login/sign-out flow. 
 
 Password storage: a Django-style encoded string
 ``pbkdf2_sha256$<iterations>$<salt_hex>$<hash_hex>`` so the salt and hash live
-in a single CSV cell. Hashing uses only the Python standard library.
+in a single CSV cell. Hashing uses only the Python standard library. 
 """
 
-from __future__ import annotations
+from __future__ import annotations 
 
 import functools 
 import hashlib
@@ -22,7 +22,7 @@ import pandas as pd
 import streamlit as st 
 
 # ---------------------------------------------------------------------------
-# Storage location + schema
+# Storage location + schema 
 # ---------------------------------------------------------------------------
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 USERS_CSV = os.path.join(ROOT, "data", "users.csv")
@@ -41,7 +41,7 @@ SEED_ADMIN_PASSWORD = os.environ.get("BLOXLOGIC_ADMIN_PASSWORD", "admin123")
 
 
 # ---------------------------------------------------------------------------
-# Password hashing 
+# Password hashing
 # ---------------------------------------------------------------------------
 def hash_password(password: str) -> str:
     """Return an encoded ``pbkdf2_sha256$iter$salt$hash`` string for *password*."""
@@ -74,7 +74,7 @@ def verify_password(password: str, encoded: str) -> bool:
 
 
 # ---------------------------------------------------------------------------
-# User store (CSV)  
+# User store (CSV)
 # ---------------------------------------------------------------------------
 def load_users(path: str = USERS_CSV) -> pd.DataFrame:
     """Load the user store, creating it (with a seeded admin) if missing."""
@@ -208,7 +208,7 @@ def authenticate(username: str, password: str,
 
 
 # ---------------------------------------------------------------------------
-# Session-state helpers
+# Session-state helpers 
 # ---------------------------------------------------------------------------
 def init_session() -> None:
     """Seed the session keys the router and views rely on."""
@@ -239,5 +239,4 @@ def current_user() -> dict | None:
 def goto(page: str) -> None:
     """Set the active page; the caller should follow with ``st.rerun()``."""
     st.session_state.page = page
-
 
