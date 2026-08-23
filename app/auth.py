@@ -22,7 +22,7 @@ import pandas as pd
 import streamlit as st 
 
 # ---------------------------------------------------------------------------
-# Storage location + schema 
+# Storage location + schema
 # ---------------------------------------------------------------------------
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 USERS_CSV = os.path.join(ROOT, "data", "users.csv")
@@ -41,7 +41,7 @@ SEED_ADMIN_PASSWORD = os.environ.get("BLOXLOGIC_ADMIN_PASSWORD", "admin123")
 
 
 # ---------------------------------------------------------------------------
-# Password hashing
+# Password hashing 
 # ---------------------------------------------------------------------------
 def hash_password(password: str) -> str:
     """Return an encoded ``pbkdf2_sha256$iter$salt$hash`` string for *password*."""
@@ -74,7 +74,7 @@ def verify_password(password: str, encoded: str) -> bool:
 
 
 # ---------------------------------------------------------------------------
-# User store (CSV)
+# User store (CSV) 
 # ---------------------------------------------------------------------------
 def load_users(path: str = USERS_CSV) -> pd.DataFrame:
     """Load the user store, creating it (with a seeded admin) if missing."""
@@ -239,4 +239,3 @@ def current_user() -> dict | None:
 def goto(page: str) -> None:
     """Set the active page; the caller should follow with ``st.rerun()``."""
     st.session_state.page = page
-
