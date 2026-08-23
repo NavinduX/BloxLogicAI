@@ -248,7 +248,7 @@ def evaluate(df: pd.DataFrame, test_periods: int = TEST_PERIODS,
 
 
 # ---------------------------------------------------------------------------
-# Persistence (shared) 
+# Persistence (shared)
 # ---------------------------------------------------------------------------
 def save_model(model: Prophet, path: str = MODEL_PATH) -> str:
     os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -298,7 +298,7 @@ def run_multivariate_model(df: pd.DataFrame, *, regressors: list[str] = MV_REGRE
 
 
 # ---------------------------------------------------------------------------
-# CLI
+# CLI 
 # ---------------------------------------------------------------------------
 def _report(kind: str, df: pd.DataFrame, result: dict, horizon: int) -> None:
     """Print a consistent summary for either model."""
@@ -352,3 +352,4 @@ def main(argv: list[str] | None = None) -> None:
 
 if __name__ == "__main__":
     main()
+
