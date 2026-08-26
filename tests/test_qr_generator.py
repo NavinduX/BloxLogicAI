@@ -1,6 +1,6 @@
 """
 Tests for blockchain/qr_generator.py — payload formatting, PNG output, and the
-generate -> scan -> decode -> extract round trip used by the in-app QR scanner.
+generate -> scan -> decode -> extract round trip used by the in-app QR scanner. 
 """
 
 from __future__ import annotations
