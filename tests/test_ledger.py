@@ -196,4 +196,3 @@ def test_add_block_rejects_after_exported(tmp_ledger):
             add_block("TEA001", stage, "Estate A", "details")
         with pytest.raises(InvalidStageError):
             add_block("TEA001", "Exported", "Estate A", "details")
-
