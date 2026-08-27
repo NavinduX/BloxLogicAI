@@ -22,7 +22,7 @@ import pandas as pd
 import streamlit as st 
 
 # ---------------------------------------------------------------------------
-# Storage location + schema 
+# Storage location + schema
 # ---------------------------------------------------------------------------
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 USERS_CSV = os.path.join(ROOT, "data", "users.csv")
