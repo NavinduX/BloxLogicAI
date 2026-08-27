@@ -1,4 +1,4 @@
-"""Tests for the Prophet forecasting module (models/forecasting.py).""" 
+"""Tests for the Prophet forecasting module (models/forecasting.py)."""
 
 import numpy as np
 import pandas as pd
