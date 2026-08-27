@@ -1,4 +1,4 @@
-"""Tests for the authentication module (app/auth.py)."""
+"""Tests for the authentication module (app/auth.py).""" 
 
 from app import auth
 
