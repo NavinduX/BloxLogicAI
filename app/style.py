@@ -12,7 +12,7 @@ from __future__ import annotations
 import streamlit as st
 
 # ---------------------------------------------------------------------------
-# CSS — only elements that config.toml cannot handle
+# CSS — only elements that config.toml cannot handle 
 # ---------------------------------------------------------------------------
 _CSS = """
 <style>
