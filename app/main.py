@@ -39,7 +39,7 @@ PUBLIC_PAGES = {"landing": landing, "login": login, "register": register}
 
 
 # ---------------------------------------------------------------------------
-# Router
+# Router 
 # ---------------------------------------------------------------------------
 if not auth.is_authenticated():
     page = st.session_state.page
