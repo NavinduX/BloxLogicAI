@@ -153,7 +153,7 @@ def test_next_stage_progression(tmp_ledger):
 
 
 # ---------------------------------------------------------------------------
-# add_block round-trip
+# add_block round-trip 
 # ---------------------------------------------------------------------------
 
 def test_add_block_seq_is_per_batch(tmp_ledger):
