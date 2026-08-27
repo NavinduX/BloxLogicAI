@@ -1,5 +1,5 @@
 """
-SHA-256 hash chain ledger for tea batch traceability.
+SHA-256 hash chain ledger for tea batch traceability. 
 
 Each tea batch owns its own independent hash chain: a block's previous_hash
 links only to the prior block of the SAME batch, seeded at GENESIS_HASH.
