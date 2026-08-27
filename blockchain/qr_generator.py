@@ -17,7 +17,7 @@ text that was encoded.
 """
 
 
-from __future__ import annotations 
+from __future__ import annotations
 
 import io
 import re
