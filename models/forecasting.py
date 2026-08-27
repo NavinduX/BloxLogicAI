@@ -248,7 +248,7 @@ def evaluate(df: pd.DataFrame, test_periods: int = TEST_PERIODS,
 
 
 # ---------------------------------------------------------------------------
-# Persistence (shared) 
+# Persistence (shared)
 # ---------------------------------------------------------------------------
 def save_model(model: Prophet, path: str = MODEL_PATH) -> str:
     os.makedirs(os.path.dirname(path), exist_ok=True)
