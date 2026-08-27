@@ -1,5 +1,5 @@
 """
-Anomaly Detection module using Isolation Forest.
+Anomaly Detection module using Isolation Forest. 
 """
 
 from __future__ import annotations 
