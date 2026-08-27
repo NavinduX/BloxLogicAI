@@ -13,7 +13,7 @@ Payload text is ASCII-sanitized before encoding: some QR encoder/decoder
 implementations mis-round-trip non-ASCII bytes (e.g. "°") by misinterpreting
 them as Kanji-mode segments, corrupting the scanned result. Sticking to ASCII
 keeps every scanner -- ours and third-party phone apps -- reading the exact
-text that was encoded. 
+text that was encoded.
 """
 
 
