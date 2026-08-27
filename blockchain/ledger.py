@@ -14,7 +14,7 @@ list containing all batches' blocks, in insertion order.
     .venv/Scripts/python.exe blockchain/ledger.py --tamper    # non-destructive tamper demo
 """
 
-from __future__ import annotations
+from __future__ import annotations 
 
 import argparse
 import copy
