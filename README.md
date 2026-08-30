@@ -34,15 +34,30 @@
 
 ## Screenshots
 
-| Landing Page | User Dashboard |
+### Landing & Authentication
+| Landing Page | Login Page |
 |:---:|:---:|
-| ![Landing Page](docs/images/landing_page.png) | ![User Dashboard](docs/images/dashboard_user_page.png) |
-| **Forecasting (User Page)** | **Anomaly Detection (User Page)** |
-| ![Forecasting](docs/images/forecast_user_page.png) | ![Anomaly Detection](docs/images/anomaly_detection_user_page.png) |
-| **Blockchain (User Page)** | **Dataset Management (Admin)** |
-| ![Blockchain User](docs/images/blockchain_user_page.png) | ![Dataset Management](docs/images/dataset_management_admin.png) |
-| **Blockchain Ledger (Admin)** | |
-| ![Blockchain Ledger](docs/images/blockchain_ledger_admin.png) | |
+| ![Landing Page](docs/images/landing_page.png) | ![Login Page](docs/images/login_page.png) |
+| **Sign Up Page** | **User Profile** |
+| ![Sign Up](docs/images/signup_page.png) | ![Profile](docs/images/profile_user.png) |
+
+### User Portal
+| User Dashboard | Forecasting |
+|:---:|:---:|
+| ![User Dashboard](docs/images/dashboard_user_page.png) | ![Forecasting](docs/images/forecast_user_page.png) |
+| **Anomaly Detection** | **Blockchain Trace** |
+| ![Anomaly Detection](docs/images/anomaly_detection_user_page.png) | ![Blockchain](docs/images/blockchain_user_page.png) |
+
+### Admin Portal
+| Admin Dashboard | Analytics |
+|:---:|:---:|
+| ![Admin Dashboard](docs/images/dashboard_admin.png) | ![Analytics](docs/images/analytics_admin.png) |
+| **Dataset Management** | **Forecasting Admin** |
+| ![Dataset Management](docs/images/dataset_management_admin.png) | ![Forecasting Admin](docs/images/forecast_admin.png) |
+| **Anomaly Detection Admin** | **Blockchain Ledger** |
+| ![Anomaly Detection Admin](docs/images/anomaly_detection_admin.png) | ![Blockchain Ledger](docs/images/blockchain_ledger_admin.png) |
+| **User Management** | |
+| ![User Management](docs/images/user_management_admin.png) | |
 
 ---
 
